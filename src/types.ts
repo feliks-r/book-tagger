@@ -1,0 +1,83 @@
+
+export type Tag = {
+  id: string;
+  name: string;
+  description: string | null;
+  category_id: string;
+  category?: TagCategory; // for joined queries
+};
+
+export type Book = {
+  id: string;
+  title: string;
+  author: string;
+  description?: string | null;
+};
+
+export type TagCategory = {
+  id: string;
+  name: string;
+  display_order: number;
+};
+
+export type BookTagWithVotes = {
+  id: string;
+  name: string;
+  description: string | null;
+  //category: TagCategory;
+  category_id: string;
+  category_name: string;
+  category_display_order: number;
+  score: number;
+  user_value: -1 | 0 | 1;
+};
+
+export type BookTag = {
+  userValue: -1 | 0 | 1;
+  score: number;
+  tag: {
+    id: string;
+    name: string;
+    description: string | null;
+    category: {
+      id: string;
+      name: string;
+      display_order: number;
+    };
+  };
+};
+
+export type GroupedCategory = {
+    categoryId: string;
+    categoryName: string;
+    displayOrder: number;
+    tags: {
+      id: string;
+      name: string;
+      description: string | null;
+      score: number;
+    }[];
+};
+
+export type BookTag2 = { //outdated
+  value: number; // 1 or -1
+  tag: {
+    id: string;
+    name: string;
+    description: string | null;
+    category: {
+      id: string;
+      name: string;
+      display_order: number;
+    };
+  };
+};
+
+export type TagProposal = {
+  id: string;
+  name: string;
+  description: string | null;
+  category_id: string;
+  user_id: string;
+  status: "pending" | "approved" | "rejected";
+};
