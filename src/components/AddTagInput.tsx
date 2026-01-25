@@ -31,6 +31,7 @@ export default function AddTagInput({ bookId, onTagAdded }: Props) {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
   const [newTagDescription, setNewTagDescription] = useState("");
   const [nameError, setNameError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
 
   const [categories, setCategories] = useState<TagCategory[]>([]);
 
@@ -129,7 +130,7 @@ export default function AddTagInput({ bookId, onTagAdded }: Props) {
     setShowPropose(false);
     setQuery("");
     setSuggestions([]);
-    alert("Tag proposal submitted for review!");
+    setMessage("Tag proposal submitted for review!");
   }
 
   function validateTagName(name: string) {
@@ -217,6 +218,8 @@ export default function AddTagInput({ bookId, onTagAdded }: Props) {
               <Textarea value={newTagDescription} onChange={(e) => setNewTagDescription(e.target.value)} placeholder="What does this tag mean?" />
             </div>
           </div>
+          
+          {message && <p className="mt-1 text-sm text-positive">{message}</p>}
 
           <DialogFooter className="mt-4">
             <Button variant="outline" onClick={() => { setShowPropose(false); setNameError(null); }}>

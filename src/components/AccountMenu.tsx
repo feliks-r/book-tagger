@@ -14,7 +14,6 @@ import {
   navigationMenuTriggerStyle
 } from '@/components/ui/navigation-menu'
 
-import { Menu } from 'lucide-react' //hamburger icon
 import {CircleUserRound} from 'lucide-react'
 
 export default function AccountMenu() {
@@ -33,12 +32,12 @@ export default function AccountMenu() {
         <NavigationMenuItem>
           <NavigationMenuTrigger className="py-5 m-1 bg-transparent"><CircleUserRound size={36} strokeWidth={1.3}/></NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul className="grid w-[200px] gap-4">
+            <ul className="grid w-[120px] gap-4">
               <li>
-                <NavigationMenuLink asChild>
+                <NavigationMenuLink asChild className="hover:bg-secondary">
                   <Link href="/settings">Settings</Link>
                 </NavigationMenuLink>
-                <NavigationMenuLink asChild className="">
+                <NavigationMenuLink asChild className="hover:bg-secondary">
                   <Link href="#" onClick={logout}>Log out</Link>
                 </NavigationMenuLink>
               </li>

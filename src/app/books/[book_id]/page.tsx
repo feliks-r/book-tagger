@@ -70,14 +70,14 @@ export default async function BookPage({ params }: PageProps) {
   // ------------------------------------------------------------
   // Render
   return (
-    <div className="mx-auto max-w-6xl p-8 space-y-6">
+    <div className="mx-auto max-w-6xl p-2 md:p-8 space-y-6 mt-0">
       
       {/* Title */}
-      <div className="flex">
-        <div className="bg-gray-200 w-45 min-w-45 h-60 rounded-sm"></div>
+      <div className="flex flex-col md:flex-row mt-0">
+        <div className="bg-gray-200 w-45 min-w-45 h-60 rounded-sm m-auto mt-0 mb-4 md:m-0"></div>
         <div className="flex flex-col mx-8">
-          <h1 className="text-3xl font-bold mb-1">{book.title}</h1>
-          <p className="text-lg text-foreground/80 mb-5">
+          <h1 className="text-3xl font-bold mb-1 text-center md:text-left">{book.title}</h1>
+          <p className="text-lg text-foreground/80 mb-5 text-center md:text-left">
             by <span className="font-medium">{book.author}</span>
           </p>
 
@@ -91,7 +91,7 @@ export default async function BookPage({ params }: PageProps) {
       
       {/* Tags */}
       <div>
-        <h2 className="text-lg font-semibold mb-0 inline-block">Community Tags</h2>
+        <h2 className="text-xl font-semibold mb-0 inline-block">Community Tags</h2>
         <TagSection
           bookId={book.id}
           initialTags={allTags}

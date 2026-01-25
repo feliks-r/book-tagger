@@ -5,6 +5,8 @@ import TagVote from "./TagVote";
 import AddTagInput from "./AddTagInput";
 import type { BookTagWithVotes } from "@/types";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import Link from 'next/link';
+import { SlidersHorizontal } from "lucide-react"; 
 
 type Props = {
   bookId: string;
@@ -72,38 +74,42 @@ export default function TagSection({ bookId, initialTags }: Props) {
     <div>
 
       {/* Sort Controls */}
-      <div className="text-sm mb-6 mt-1 p-0 flex gap-1 text-foreground/80">
+      <div className="text-sm mb-6 mt-2 p-0 flex gap-1 text-foreground/80">
         <label className="text-muted-foreground">sort by:</label>
         <Select value={sortBy} onValueChange={(v: "score" | "name") => setSortBy(v)}>
-          <SelectTrigger className="min-h-5 h-5 p-0 pl-2 m-0 data-[size=default]:h-4 data-[size=sm]:h-4">
+          <SelectTrigger variant="minimal">
             <SelectValue/>
           </SelectTrigger>
-          <SelectContent position="popper" align="start" className="p-0 m-0">
+          <SelectContent position="popper" align="start">
             <SelectGroup>
 
-                <SelectItem key="score" value="score" className="p-0 m-0">
+                <SelectItem key="score" value="score" className="pt-1">
                   score
                 </SelectItem>
-                <SelectItem key="name" value="name" className="p-0 m-0">
+                <SelectItem key="name" value="name" className="pt-1">
                   name
                 </SelectItem>
               
             </SelectGroup>
           </SelectContent>
         </Select>
+        <SlidersHorizontal size={15} className="m-1 ml-3"/>
+      </div>
+
+      {/* Add Tag */}
+      <div className="mb-7">
+        
+        <AddTagInput bookId={bookId} onTagAdded={handleAddTag} />
       </div>
 
       {/* Render grouped tags */}
       {grouped.map((category) => (
         <section key={category.name} className="mb-6">
-          <h3 className="font-medium mb-2">{capitalizeFirstLetter(category.name)}:</h3>
+          <h3 className="font-semibold mb-1">{capitalizeFirstLetter(category.name)}:</h3>
           <div className="flex flex-wrap gap-2">
             {category.tags.map((tag) => (
-              <div key={tag.id} className={`flex items-center gap-3 rounded-full px-3 py-1 text-sm bg-muted
-                  
-                `}
-              >
-                <span>{tag.name}</span>
+              <div key={tag.id} className="flex items-center gap-3 rounded-full px-3 py-1 bg-muted text-base">
+                <Link href={`/tags/${tag.id}`} className="hover:text-primary">{tag.name}</Link>
 
                 <TagVote
                   bookId={bookId}
@@ -118,11 +124,7 @@ export default function TagSection({ bookId, initialTags }: Props) {
         </section>
       ))}
 
-      {/* Add Tag */}
-      <div className="mt-7">
-        <h2 className="text-lg font-semibold mb-2">Add Tags</h2>
-        <AddTagInput bookId={bookId} onTagAdded={handleAddTag} />
-      </div>
+      
     </div>
   );
 }

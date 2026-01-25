@@ -17,10 +17,11 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  navigationMenuTriggerStyle
+  NavigationMenuContent,
 } from '@/components/ui/navigation-menu'
 
 import type { Book } from "@/types";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem } from './ui/dropdown-menu'
 
 export default function Navbar() {
   const { user } = useAuth()
@@ -85,8 +86,8 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="border-b bg-card">
-      <div className="max-w-6xl mx-auto p-0 flex items-center justify-between">
+    <nav className="sticky top-0 border-b bg-card">
+      <div className="max-w-7xl mx-auto p-0 flex items-center justify-between min-h-15">
 
         {/*--------------------- Left: Navigation ---------------------*/}
         <NavigationMenu className="hidden md:flex">
@@ -97,7 +98,7 @@ export default function Navbar() {
                 <Link
                   key="home"
                   href="/"
-                  className={"text-sm font-bold m-1 px-6 py-3 hover:bg-transparent"}
+                  className={"text-sm font-bold m-1 px-6 py-3"}
                 >
                   PageTitle
                 </Link>
@@ -112,7 +113,7 @@ export default function Navbar() {
                     <Link
                       key={link.href}
                       href={link.href}
-                      className={"text-sm font-medium transition-colors m-1 px-6 py-2 hover:bg-transparent hover:text-primary"}
+                      className={"font-medium text-center transition-colors m-1 px-6 py-2 w-24 hover:font-semibold"}
                     >
                       {link.label}
                     </Link>
@@ -120,9 +121,62 @@ export default function Navbar() {
                 </NavigationMenuItem>
               )
             })}
-
+            <NavigationMenuItem>
+              <NavigationMenuTrigger> Books
+              </NavigationMenuTrigger>
+              <NavigationMenuContent className={"min-w-50"}>
+                <NavigationMenuLink asChild>
+                  <Link
+                    key="home"
+                    href="/"
+                    className={"text-sm"}
+                  >
+                    Search
+                  </Link>
+                  </NavigationMenuLink>
+                  <NavigationMenuLink asChild>
+                  <Link
+                    key="home"
+                    href="/"
+                    className={"text-sm"}
+                  >
+                    My Books
+                  </Link>
+                </NavigationMenuLink>
+                <NavigationMenuLink asChild>
+                  <Link
+                    key="home"
+                    href="/"
+                    className={"text-sm"}
+                  >
+                    Add a book
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
+
+        {/*------------ Mobile (hamburger menu) ------------*/}
+        <DropdownMenu>
+          <DropdownMenuTrigger className="p-3 md:hidden"><Menu size={28} strokeWidth={1.3}/></DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {links.map(link => {
+                const isActive = pathname === link.href
+                return (
+                  <DropdownMenuItem key={link.href} asChild>
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={"font-medium transition-colors m-1 px-6 py-2 hover:text-primary cursor-pointer"}
+                    >
+                      {link.label}
+                    </Link>
+                  </DropdownMenuItem>
+                )
+              })}
+            </DropdownMenuContent>
+        </DropdownMenu>
 
 
         {/*--------------------- Center: Search ---------------------*/}
@@ -131,7 +185,7 @@ export default function Navbar() {
           <Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search books…"
-            className="bg-background pl-9"
+            className="bg-background pl-9 font-light"
             value={query}
             type='search'
             onFocus={() => setSuggestionsOpen(true)}
