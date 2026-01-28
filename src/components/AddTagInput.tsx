@@ -57,7 +57,7 @@ export default function AddTagInput({ bookId, onTagAdded }: Props) {
     const timeout = setTimeout(async () => {
       setIsLoading(true);
       try {
-        const res = await fetch(`/api/tags/search?query=${encodeURIComponent(query)}`);
+        const res = await fetch(`/api/tags/search?q=${encodeURIComponent(query)}`);
         const data = await res.json();
         setSuggestions(data.tags || []);
       } finally {
