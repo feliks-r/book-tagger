@@ -60,13 +60,16 @@ export async function POST(req: Request) {
   const score = votes?.reduce((sum, v) => sum + v.value, 0) ?? 0;
   const userVote = votes?.find((v) => v.user_id === user.id)?.value ?? 0;
 
+  // tag_categories is a single object (foreign key relation), not an array
+  const category = tagData.tag_categories as { name: string; display_order: number } | null;
+
   const tag: BookTagWithVotes = {
     id: tagData.id,
     name: tagData.name,
     description: tagData.description,
     category_id: tagData.category_id,
-    category_name: tagData.tag_categories?.[0]?.name ?? "",
-    category_display_order: tagData.tag_categories?.[0]?.display_order ?? 0,
+    category_name: category?.name ?? "",
+    category_display_order: category?.display_order ?? 0,
     score,
     user_value: userVote,
   };
