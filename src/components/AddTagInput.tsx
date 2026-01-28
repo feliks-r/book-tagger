@@ -71,8 +71,15 @@ export default function AddTagInput({ bookId, onTagAdded }: Props) {
   // ----------------- Fetch categories -----------------
   useEffect(() => {
     fetch("/api/tag-categories")
-      .then((res) => res.json())
-      .then((data) => setCategories(data.categories));
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch categories");
+        return res.json();
+      })
+      .then((data) => setCategories(data.categories || []))
+      .catch((err) => {
+        console.error("Error fetching categories:", err);
+        setCategories([]);
+      });
   }, []);
 
   useEffect(() => {
@@ -156,10 +163,10 @@ export default function AddTagInput({ bookId, onTagAdded }: Props) {
       />
 
       {suggestionsOpen && query.length > 0 && (
-        <div className="absolute z-10 mt-1 w-full rounded border bg-white shadow">
-          {isLoading && <div className="px-3 py-2 text-sm text-gray-500">Searching...</div>}
+        <div className="absolute z-10 mt-1 w-full rounded border bg-background shadow">
+          {isLoading && <div className="px-3 py-2 text-sm text-muted-foreground">Searching...</div>}
           {!isLoading && suggestions.length === 0 && (
-            <div className="px-3 py-2 text-sm text-gray-500">No matching tags</div>
+            <div className="px-3 py-2 text-sm text-muted-foreground">No matching tags</div>
           )}
           {!isLoading &&
             suggestions.map((tag) => (
@@ -169,7 +176,7 @@ export default function AddTagInput({ bookId, onTagAdded }: Props) {
                 onClick={() => handleSelect(tag)}
               >
                 <div className="inline-block">{tag.name}</div>
-                {tag.category && <small className="text-gray-400 inline-block ml-2">({tag.category.name})</small>}
+                {tag.category && <small className="text-muted-foreground inline-block ml-2">({tag.category.name})</small>}
               </div>
             ))}
           <div className="border-t" />

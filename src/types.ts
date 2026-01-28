@@ -57,12 +57,7 @@ export type GroupedCategory = {
     categoryId: string;
     categoryName: string;
     displayOrder: number;
-    tags: {
-      id: string;
-      name: string;
-      description: string | null;
-      score: number;
-    }[];
+    tags: BookTagWithVotes[];
 };
 
 export type TagProposal = {
