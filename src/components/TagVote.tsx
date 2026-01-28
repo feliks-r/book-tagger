@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { ChevronUp, ChevronDown, ArrowBigUp, ArrowBigDown } from "lucide-react";
+import { useState } from "react";
+import { ArrowBigUp, ArrowBigDown } from "lucide-react";
 
 type Props = {
   bookId: string;
@@ -15,13 +15,6 @@ export default function TagVote({ bookId, tagId, initialScore, initialValue, onC
   const [score, setScore] = useState(initialScore);
   const [value, setValue] = useState(initialValue);
   const [loading, setLoading] = useState(false);
-
-  //useEffect(() => {
-    //setScore(initialScore)
-  //}, [initialScore])
-  //useEffect(() => {
-    //setValue(initialValue)
-  //}, [initialValue])
 
   async function vote(voteValue: 1 | -1) {
     if (loading) return;

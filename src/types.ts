@@ -1,4 +1,3 @@
-
 export type Tag = {
   id: string;
   name: string;
@@ -6,6 +5,13 @@ export type Tag = {
   category_id: string;
   category?: TagCategory; // for joined queries
 };
+
+export type Profile = {
+  id: string
+  username: string
+  role: string
+  avatar_url: string | null
+}
 
 export type Book = {
   id: string;
@@ -57,20 +63,6 @@ export type GroupedCategory = {
       description: string | null;
       score: number;
     }[];
-};
-
-export type BookTag2 = { //outdated
-  value: number; // 1 or -1
-  tag: {
-    id: string;
-    name: string;
-    description: string | null;
-    category: {
-      id: string;
-      name: string;
-      display_order: number;
-    };
-  };
 };
 
 export type TagProposal = {

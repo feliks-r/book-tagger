@@ -1,10 +1,6 @@
-//export const dynamic = "force-dynamic";
-
 import { createClient } from "@/lib/supabase/server";
 import TagSection from "@/components/TagSection";
 import type { Book, BookTagWithVotes } from "@/types";
-
-import {SlidersHorizontal, FunnelPlus} from 'lucide-react';
 
 type PageProps = { 
   params: Promise<{ book_id: string }>;

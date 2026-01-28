@@ -13,7 +13,6 @@ type Props = {
   onTagAdded: (tag: BookTagWithVotes) => void;
 };
 
-
 export default function AddTagInput({ bookId, onTagAdded }: Props) {
 
   //tag search
