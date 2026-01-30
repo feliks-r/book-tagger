@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import TagSection from "@/components/TagSection";
-import type { Book, BookTagWithVotes } from "@/types";
+import type { Book, BookTagWithVotes, GroupedCategory } from "@/types";
 
 type PageProps = { 
   params: Promise<{ book_id: string }>;
@@ -34,17 +34,8 @@ export default async function BookPage({ params }: PageProps) {
 
   const allTags: BookTagWithVotes[] = tags as BookTagWithVotes[];
 
-  console.log(tags);
-
   // ------------------------------------------------------------
   // Group by category
-  type GroupedCategory = {
-    categoryId: string;
-    categoryName: string;
-    displayOrder: number;
-    tags: BookTagWithVotes[];
-  };
-
   const groupedMap: Record<string, GroupedCategory> = {};
 
   allTags.forEach((tag) => {
@@ -70,7 +61,7 @@ export default async function BookPage({ params }: PageProps) {
       
       {/* Title */}
       <div className="flex flex-col md:flex-row mt-0">
-        <div className="bg-gray-200 w-45 min-w-45 h-60 rounded-sm m-auto mt-0 mb-4 md:m-0"></div>
+        <div className="bg-muted w-45 min-w-45 h-60 rounded-sm m-auto mt-0 mb-4 md:m-0"></div>
         <div className="flex flex-col mx-8">
           <h1 className="text-3xl font-bold mb-1 text-center md:text-left">{book.title}</h1>
           <p className="text-lg text-foreground/80 mb-5 text-center md:text-left">
@@ -78,7 +69,7 @@ export default async function BookPage({ params }: PageProps) {
           </p>
 
           {book.description && (
-            <p className="text-gray-800 leading-relaxed">{book.description}</p>
+            <p className="text-foreground leading-relaxed">{book.description}</p>
           )}
         </div>
       </div>

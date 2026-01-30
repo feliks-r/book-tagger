@@ -22,7 +22,6 @@ export async function POST(req: Request) {
   if (!user) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
-  console.log(user);
 
   try {
     // ------------------------------------------------------------
@@ -56,11 +55,9 @@ export async function POST(req: Request) {
 
 
     return NextResponse.json({ success: true });
-  } catch (err: any) {
+  } catch (err) {
     console.error("VOTE ROUTE ERROR:", err);
-    return NextResponse.json(
-      { error: err.message || "Something went wrong" },
-      { status: 500 }
-    );
+    const message = err instanceof Error ? err.message : "Something went wrong";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

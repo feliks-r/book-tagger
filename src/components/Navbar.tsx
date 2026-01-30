@@ -49,7 +49,7 @@ export default function Navbar() {
     const timeout = setTimeout(async () => {
       setIsLoading(true);
       try {
-        const res = await fetch(`/api/books/search?query=${encodeURIComponent(query)}`);
+        const res = await fetch(`/api/books/search?q=${encodeURIComponent(query)}`);
         const data = await res.json();
         setSuggestions(data.books || []);
       } finally {
@@ -106,10 +106,10 @@ export default function Navbar() {
           />
 
           {suggestionsOpen && query.length > 0 && (
-          <div className="absolute z-10 mt-1 w-full rounded border bg-white shadow">
-            {isLoading && <div className="px-3 py-2 text-sm text-gray-500">Searching...</div>}
+          <div className="absolute z-10 mt-1 w-full rounded border bg-background shadow">
+            {isLoading && <div className="px-3 py-2 text-sm text-muted-foreground">Searching...</div>}
             {!isLoading && suggestions.length === 0 && (
-              <div className="px-3 py-2 text-sm text-gray-500">No matching results</div>
+              <div className="px-3 py-2 text-sm text-muted-foreground">No matching results</div>
             )}
             {!isLoading &&
               suggestions.map((book) => (
@@ -119,7 +119,7 @@ export default function Navbar() {
                   href={`/books/${book.id}`}
                 >
                   <div>{book.title}</div>
-                  {book.author && <small className="text-gray-500">{book.author}</small>}
+                  {book.author && <small className="text-muted-foreground">{book.author}</small>}
                 </Link>
               ))}
           </div>
