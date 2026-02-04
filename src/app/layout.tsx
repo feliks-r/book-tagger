@@ -2,17 +2,17 @@ import './globals.css'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { AuthProvider } from '@/context/AuthContext'
-import { Quicksand } from 'next/font/google'
 import { Geist } from 'next/font/google'
 import { BackToTop } from '@/components/back-to-top'
-
-const quicksand = Quicksand({
-  subsets: ['latin'],
-})
 
 const geist = Geist({
   subsets: ['latin'],
 })
+
+export const metadata = {
+  title: 'Booksonomy - Community-Driven Book Tags',
+  description: 'Discover and tag books with the community. Find your next read through user-generated tags and recommendations.',
+}
 
 export default function RootLayout({
   children,
@@ -21,7 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={geist.className}>
-      <body className="min-h-screen">
+      <body className="min-h-screen dark">
         <AuthProvider>
           <Navbar />
           <main className="max-w-6xl mx-auto p-4">

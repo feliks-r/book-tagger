@@ -156,7 +156,7 @@ export function NavLinks() {
               {section.title}
             </NavigationMenuTrigger>
             <NavigationMenuContent>
-              <ul className="grid w-[280px] gap-1 p-0">
+              <ul className="grid w-[280px] gap-0 p-0">
                 {section.items.map((item) => (
                   <NavLinkItem key={item.href} item={item} />
                 ))}

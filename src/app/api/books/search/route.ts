@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-// api route for searching tbooks by input text 
+// api route for searching books by input text 
 // used in the search bar on top
 
 export async function GET(req: Request) {
   const supabase = await createClient();
   const { searchParams } = new URL(req.url);
-  const query = searchParams.get("query") || "";
+  const query = searchParams.get("q") || "";
 
   if (!query) {
     return NextResponse.json({ books: [] });

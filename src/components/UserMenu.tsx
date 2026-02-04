@@ -49,7 +49,7 @@ export function UserMenu({ user, profile }: UserMenuProps) {
     )
   }
 
-  const initials = profile?.username.charAt(0)
+  const initials = profile?.username.charAt(0).toUpperCase()
 
   return (
     <DropdownMenu>
@@ -62,7 +62,7 @@ export function UserMenu({ user, profile }: UserMenuProps) {
           <span className="sr-only">Open user menu</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
+      <DropdownMenuContent align="end" className="w-56 mt-1">
         <div className="flex items-center gap-3 px-2 py-2">
           <Avatar className="size-10">
             <AvatarImage src={profile?.avatar_url || null} alt={profile?.username} />
@@ -112,9 +112,9 @@ export function UserMenu({ user, profile }: UserMenuProps) {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={logout}
-          className="text-destructive-foreground focus:text-destructive-foreground"
+          className="text-destructive-foreground focus:text-destructive-foreground hover:bg-destructive/10 focus:bg-destructive/10"
         >
-          <LogOut className="text-destructive-foreground mr-2 size-4" />
+          <LogOut className="text-destructive-foreground mr-2 size-4 transition-colors" />
           Log Out
         </DropdownMenuItem>
       </DropdownMenuContent>

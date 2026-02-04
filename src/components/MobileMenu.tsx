@@ -282,7 +282,7 @@ export function MobileMenu({ user, profile, onLogIn, onLogOut }: MobileMenuProps
                     onLogOut?.()
                     handleNavigate()
                   }}
-                  className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-destructive transition-colors hover:bg-destructive/10"
+                  className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-destructive-foreground transition-colors hover:bg-destructive/10"
                 >
                   <LogOut className="size-4" />
                   Log Out

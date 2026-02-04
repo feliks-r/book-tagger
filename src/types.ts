@@ -18,6 +18,9 @@ export type Book = {
   title: string;
   author: string;
   description?: string | null;
+  publication_year?: number | null;
+  series_index?: number | null;
+  series?: Series;
 };
 
 export type TagCategory = {
@@ -57,12 +60,7 @@ export type GroupedCategory = {
     categoryId: string;
     categoryName: string;
     displayOrder: number;
-    tags: {
-      id: string;
-      name: string;
-      description: string | null;
-      score: number;
-    }[];
+    tags: BookTagWithVotes[];
 };
 
 export type TagProposal = {
@@ -73,3 +71,14 @@ export type TagProposal = {
   user_id: string;
   status: "pending" | "approved" | "rejected";
 };
+
+export type Shelf = {
+  id: string;
+  name: string;
+  display_order: number;
+}
+
+export type Series = {
+  id: string;
+  name: string;
+}

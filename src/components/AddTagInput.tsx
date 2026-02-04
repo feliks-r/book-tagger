@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { Tag, TagCategory, BookTagWithVotes } from "@/types";
 
+import { Plus } from "lucide-react";
+
 type Props = { 
   bookId: string;
   onTagAdded: (tag: BookTagWithVotes) => void;
@@ -57,7 +59,7 @@ export default function AddTagInput({ bookId, onTagAdded }: Props) {
     const timeout = setTimeout(async () => {
       setIsLoading(true);
       try {
-        const res = await fetch(`/api/tags/search?query=${encodeURIComponent(query)}`);
+        const res = await fetch(`/api/tags/search?q=${encodeURIComponent(query)}`);
         const data = await res.json();
         setSuggestions(data.tags || []);
       } finally {
@@ -144,7 +146,10 @@ export default function AddTagInput({ bookId, onTagAdded }: Props) {
   // ----------------- Render -----------------
   return (
     <div className="relative w-full max-w-md" >
+
+      {/*----------------- Input -----------------*/}
       <form ref={searchRef}>
+      <Plus className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground" />
       <Input 
         value={query} 
         onChange={(e) => {
@@ -153,10 +158,11 @@ export default function AddTagInput({ bookId, onTagAdded }: Props) {
             }}
         onFocus={() => setSuggestionsOpen(true)}
         placeholder="Add a tag..." 
+        className="pl-9"
       />
 
       {suggestionsOpen && query.length > 0 && (
-        <div className="absolute z-10 mt-1 w-full rounded border bg-white shadow">
+        <div className="absolute z-10 mt-1 w-full rounded border bg-background shadow">
           {isLoading && <div className="px-3 py-2 text-sm text-gray-500">Searching...</div>}
           {!isLoading && suggestions.length === 0 && (
             <div className="px-3 py-2 text-sm text-gray-500">No matching tags</div>
@@ -165,7 +171,7 @@ export default function AddTagInput({ bookId, onTagAdded }: Props) {
             suggestions.map((tag) => (
               <div
                 key={tag.id}
-                className="cursor-pointer px-3 py-2 hover:bg-secondary"
+                className="cursor-pointer px-3 py-2 hover:bg-secondary rounded"
                 onClick={() => handleSelect(tag)}
               >
                 <div className="inline-block">{tag.name}</div>
@@ -173,14 +179,14 @@ export default function AddTagInput({ bookId, onTagAdded }: Props) {
               </div>
             ))}
           <div className="border-t" />
-          <div className="cursor-pointer px-3 py-2 text-sm text-primary hover:bg-secondary" onClick={openProposeModal}>
+          <div className="cursor-pointer px-3 py-2 text-sm text-primary hover:bg-secondary rounded" onClick={openProposeModal}>
             Propose new tag: <strong>{query}</strong>
           </div>
         </div>
       )}
       </form>
 
-      {/* Modal */}
+      {/*----------------- Modal -----------------*/}
       <Dialog open={showPropose} onOpenChange={setShowPropose}>
         <DialogContent>
           <DialogHeader>
@@ -209,7 +215,7 @@ export default function AddTagInput({ bookId, onTagAdded }: Props) {
                     ))}
                   </SelectGroup>
                 </SelectContent>
-              </Select>
+              </Select> 
             </div>
 
             <div>
