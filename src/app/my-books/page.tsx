@@ -348,7 +348,7 @@ export default function MyBooksPage() {
       ) : (
         <div className="border rounded-lg overflow-hidden">
           {/* Table header */}
-          <div className="hidden sm:grid sm:grid-cols-[1fr_1fr_100px_120px_auto] gap-4 items-center px-4 py-2 bg-muted/50 text-sm font-medium text-muted-foreground border-b">
+          <div className="hidden sm:grid sm:grid-cols-[2fr_2fr_80px_110px_100px] gap-4 items-center px-4 py-2 bg-muted/50 text-sm font-medium text-muted-foreground border-b">
             <button
               type="button"
               className="flex items-center gap-1 hover:text-foreground text-left"
@@ -381,7 +381,7 @@ export default function MyBooksPage() {
           {books.map((book) => (
             <div
               key={book.id}
-              className="flex flex-col gap-2 px-4 py-3 border-b last:border-b-0 sm:grid sm:grid-cols-[1fr_1fr_100px_120px_auto] sm:items-center sm:gap-4"
+              className="flex flex-col gap-2 px-4 py-3 border-b last:border-b-0 sm:grid sm:grid-cols-[2fr_2fr_80px_110px_100px] sm:items-center sm:gap-4"
             >
               <Link
                 href={`/books/${book.id}`}
