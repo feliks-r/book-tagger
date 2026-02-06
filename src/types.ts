@@ -65,7 +65,7 @@ export type Bookshelf = {
   id: string;
   name: string;
   user_id: string;
-  position: number;
+  display_order: number;
   created_at: string;
 };
 

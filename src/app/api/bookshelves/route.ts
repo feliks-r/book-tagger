@@ -18,7 +18,7 @@ export async function GET(request: Request) {
     .from("bookshelves")
     .select("*")
     .eq("user_id", user.id)
-    .order("position", { ascending: true });
+    .order("display_order", { ascending: true });
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -60,19 +60,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Name is required" }, { status: 400 });
   }
 
-  // Get the highest position to add the new shelf at the end
+  // Get the highest display_order to add the new shelf at the end
   const { data: existing } = await supabase
     .from("bookshelves")
-    .select("position")
+    .select("display_order")
     .eq("user_id", user.id)
-    .order("position", { ascending: false })
+    .order("display_order", { ascending: false })
     .limit(1);
 
-  const nextPosition = existing && existing.length > 0 ? existing[0].position + 1 : 0;
+  const nextOrder = existing && existing.length > 0 ? existing[0].display_order + 1 : 0;
 
   const { data: shelf, error } = await supabase
     .from("bookshelves")
-    .insert({ user_id: user.id, name: name.trim(), position: nextPosition })
+    .insert({ user_id: user.id, name: name.trim(), display_order: nextOrder })
     .select()
     .single();
 
