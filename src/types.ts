@@ -61,6 +61,18 @@ export type GroupedCategory = {
     tags: BookTagWithVotes[];
 };
 
+export type Bookshelf = {
+  id: string;
+  name: string;
+  user_id: string;
+  position: number;
+  created_at: string;
+};
+
+export type BookshelfWithStatus = Bookshelf & {
+  hasBook: boolean;
+};
+
 export type TagProposal = {
   id: string;
   name: string;

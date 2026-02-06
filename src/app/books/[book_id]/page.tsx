@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import TagSection from "@/components/TagSection";
+import BookshelfButton from "@/components/BookshelfButton";
 import type { Book, BookTagWithVotes, GroupedCategory } from "@/types";
 
 type PageProps = { 
@@ -71,6 +72,10 @@ export default async function BookPage({ params }: PageProps) {
           {book.description && (
             <p className="text-foreground leading-relaxed">{book.description}</p>
           )}
+
+          <div className="mt-4 flex justify-center md:justify-start">
+            <BookshelfButton bookId={book.id} />
+          </div>
         </div>
       </div>
 
