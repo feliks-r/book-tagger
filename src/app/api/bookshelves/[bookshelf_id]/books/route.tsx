@@ -21,7 +21,8 @@ export async function GET(
         series (
           id,
           name
-        )
+        ),
+        olid
       )
     `)
     .eq("bookshelf_id", bookshelf_id)

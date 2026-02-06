@@ -1,15 +1,22 @@
 'use client'
 
 import { useState, useEffect } from "react";
+import Link from 'next/link';
+
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectItem } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableRow, TableHeader } from "@/components/ui/table";
+import { columns, BookRow } from "./columns"
+import { DataTable } from "./data-table"
+
 import type { Shelf, Book } from "@/types";
-import Link from 'next/link'
+
 
 export default function MyBooks(){
 
   const [bookshelves, setBookshelves] = useState<Shelf[]>([]);
   const [selectedShelf, setSelectedShelf] = useState<string>("");
   const [books, setBooks] = useState<Book[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [showEditing, setShowEditing] = useState(false);
 
@@ -25,29 +32,32 @@ export default function MyBooks(){
     }
   }, [bookshelves]);
 
-useEffect(() => {
-  if (!selectedShelf) return
+  useEffect(() => {
+    setIsLoading(true);
+    if (!selectedShelf) return
+    
+    fetch(`/api/bookshelves/${selectedShelf}/books`)
+      .then(async (res) => {
+        const body = await res.json()
 
-  fetch(`/api/bookshelves/${selectedShelf}/books`)
-    .then(async (res) => {
-      const body = await res.json()
+        if (!res.ok) {
+          console.error("API error:", body)
+          throw new Error(body.error)
+        }
 
-      if (!res.ok) {
-        console.error("API error:", body)
-        throw new Error(body.error)
-      }
+        return body
+      })
+      .then((data) => setBooks(data.books))
+      .catch((err) => console.error("Fetch failed:", err.message))
+      .finally(() => setIsLoading(false))
+  }, [selectedShelf])
 
-      return body
-    })
-    .then((data) => setBooks(data.books))
-    .catch((err) => console.error("Fetch failed:", err.message))
-}, [selectedShelf])
+
 
 
   function openShelfEditing() {
     setShowEditing(true);
   }
-  console.log(books)
 
   return(
     <div className="w-full">
@@ -75,11 +85,17 @@ useEffect(() => {
         }
         
       </div>
-      <div>
-        {books?.map((book) => (
-          <p key={book.id}>{book.title}</p>
-        )) }
-      </div>
+
+      {/* Results */}
+      {isLoading ? (
+        <div className="text-center py-12 text-muted-foreground">Loading...</div>
+      ) : books.length === 0 ? (
+        <div className="text-center py-12 text-muted-foreground">
+          This bookshelf is empty.
+        </div>
+      ) : (
+        <DataTable columns={columns} data={books} />
+      )}
     </div>
   )
 }

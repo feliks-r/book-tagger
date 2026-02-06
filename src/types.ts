@@ -21,6 +21,7 @@ export type Book = {
   publication_year?: number | null;
   series_index?: number | null;
   series?: Series;
+  olid?: string | null;
 };
 
 export type TagCategory = {

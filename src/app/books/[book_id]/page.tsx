@@ -94,7 +94,7 @@ export default async function BookPage({ params }: PageProps) {
           </p>
 
           {book.description && (
-            <p className="text-muted-foreground leading-relaxed">{book.description}</p>
+            <p className="whitespace-pre-line text-muted-foreground leading-relaxed">{book.description}</p>
           )}
         </div>
       </div>

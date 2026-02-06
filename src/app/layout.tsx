@@ -24,7 +24,7 @@ export default function RootLayout({
       <body className="min-h-screen dark">
         <AuthProvider>
           <Navbar />
-          <main className="max-w-6xl mx-auto p-4">
+          <main className="max-w-6xl min-h-screen mx-auto p-4">
             {children}
             <BackToTop/>
           </main>
