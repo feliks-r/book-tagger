@@ -3,6 +3,7 @@ import { ExternalLink } from "lucide-react";
 import TagSection from "@/components/TagSection";
 import BookshelfButton from "@/components/BookshelfButton";
 import BookCover from "@/components/BookCover";
+import ExpandableText from "@/components/ExpandableText";
 import type { Book, BookTagWithVotes, GroupedCategory, BookLink } from "@/types";
 
 type PageProps = { 
@@ -123,7 +124,7 @@ export default async function BookPage({ params }: PageProps) {
           </div>
 
           {book.description && (
-            <p className="text-foreground leading-relaxed">{book.description}</p>
+            <ExpandableText text={book.description} maxLines={6} />
           )}
 
           {/* Links - mobile only, below description */}
