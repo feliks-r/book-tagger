@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 export async function GET(req: Request) {
   const supabase = await createClient();
   const { searchParams } = new URL(req.url);
-  const query = searchParams.get("query") || "";
+  const query = searchParams.get("q") || "";
 
   if (!query) {
     return NextResponse.json({ books: [] });
@@ -18,7 +18,8 @@ export async function GET(req: Request) {
     .select(`
       id,
       title,
-      author
+      author,
+      cover_id
     `)
     .ilike("title", `%${query}%`)
     .limit(6);

@@ -18,6 +18,8 @@ export type Book = {
   title: string;
   author: string;
   description?: string | null;
+  publication_year?: number | null;
+  cover_id?: number | null;
 };
 
 export type TagCategory = {
@@ -57,12 +59,28 @@ export type GroupedCategory = {
     categoryId: string;
     categoryName: string;
     displayOrder: number;
-    tags: {
-      id: string;
-      name: string;
-      description: string | null;
-      score: number;
-    }[];
+    tags: BookTagWithVotes[];
+};
+
+export type Bookshelf = {
+  id: string;
+  name: string;
+  user_id: string;
+  display_order: number;
+  created_at: string;
+};
+
+export type BookshelfWithStatus = Bookshelf & {
+  hasBook: boolean;
+};
+
+export type BookLink = {
+  id: string;
+  book_id: string;
+  label: string;
+  url: string;
+  display_order: number;
+  created_at: string;
 };
 
 export type TagProposal = {

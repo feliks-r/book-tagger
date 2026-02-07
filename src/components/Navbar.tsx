@@ -11,6 +11,7 @@ import { Search } from "lucide-react";
 import { Input } from '@/components/ui/input'
 
 import type { Book } from "@/types";
+import BookCover from "@/components/BookCover";
 
 import { MobileMenu } from './MobileMenu'
 import { NavLinks } from './NavLinks'
@@ -49,7 +50,7 @@ export default function Navbar() {
     const timeout = setTimeout(async () => {
       setIsLoading(true);
       try {
-        const res = await fetch(`/api/books/search?query=${encodeURIComponent(query)}`);
+        const res = await fetch(`/api/books/search?q=${encodeURIComponent(query)}`);
         const data = await res.json();
         setSuggestions(data.books || []);
       } finally {
@@ -106,20 +107,23 @@ export default function Navbar() {
           />
 
           {suggestionsOpen && query.length > 0 && (
-          <div className="absolute z-10 mt-1 w-full rounded border bg-white shadow">
-            {isLoading && <div className="px-3 py-2 text-sm text-gray-500">Searching...</div>}
+          <div className="absolute z-10 mt-1 w-full rounded border bg-background shadow">
+            {isLoading && <div className="px-3 py-2 text-sm text-muted-foreground">Searching...</div>}
             {!isLoading && suggestions.length === 0 && (
-              <div className="px-3 py-2 text-sm text-gray-500">No matching results</div>
+              <div className="px-3 py-2 text-sm text-muted-foreground">No matching results</div>
             )}
             {!isLoading &&
               suggestions.map((book) => (
                 <Link
                   key={book.id}
-                  className="cursor-pointer w-full px-2 py-1 block hover:bg-secondary"
+                  className="cursor-pointer w-full px-2 py-1.5 flex items-center gap-2 hover:bg-secondary"
                   href={`/books/${book.id}`}
                 >
-                  <div>{book.title}</div>
-                  {book.author && <small className="text-gray-500">{book.author}</small>}
+                  <BookCover coverId={book.cover_id} title={book.title} author={book.author} size="S" />
+                  <div className="min-w-0">
+                    <div className="truncate text-sm">{book.title}</div>
+                    {book.author && <small className="text-muted-foreground truncate block">{book.author}</small>}
+                  </div>
                 </Link>
               ))}
           </div>
