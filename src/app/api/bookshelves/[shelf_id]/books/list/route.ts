@@ -58,7 +58,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
     // Fetch book details
     let query = supabase
       .from("books")
-      .select("id, title, author, description, publication_year")
+      .select("id, title, author, description, publication_year, cover_id")
       .in("id", bookIds);
 
     if (titleQuery) {

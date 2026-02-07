@@ -19,6 +19,7 @@ export type Book = {
   author: string;
   description?: string | null;
   publication_year?: number | null;
+  cover_id?: number | null;
 };
 
 export type TagCategory = {

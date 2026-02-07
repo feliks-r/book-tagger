@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import TagSection from "@/components/TagSection";
 import BookshelfButton from "@/components/BookshelfButton";
+import BookCover from "@/components/BookCover";
 import type { Book, BookTagWithVotes, GroupedCategory } from "@/types";
 
 type PageProps = { 
@@ -15,7 +16,7 @@ export default async function BookPage({ params }: PageProps) {
   // Fetch book
   const { data: book, error: bookError } = await supabase
     .from("books")
-    .select("id, title, author, description")
+    .select("id, title, author, description, cover_id")
     .eq("id", bookId)
     .single<Book>();
 
@@ -62,7 +63,13 @@ export default async function BookPage({ params }: PageProps) {
       
       {/* Title */}
       <div className="flex flex-col md:flex-row mt-0">
-        <div className="bg-muted w-45 min-w-45 h-60 rounded-sm m-auto mt-0 mb-4 md:m-0"></div>
+        <BookCover
+          coverId={book.cover_id}
+          title={book.title}
+          author={book.author}
+          size="L"
+          className="m-auto mt-0 mb-4 md:m-0"
+        />
         <div className="flex flex-col mx-8">
           <h1 className="text-3xl font-bold mb-1 text-center md:text-left">{book.title}</h1>
           <p className="text-lg text-foreground/80 mb-5 text-center md:text-left">

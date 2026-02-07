@@ -18,7 +18,8 @@ export async function GET(req: Request) {
     .select(`
       id,
       title,
-      author
+      author,
+      cover_id
     `)
     .ilike("title", `%${query}%`)
     .limit(6);

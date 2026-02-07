@@ -18,7 +18,8 @@ export async function GET(request: NextRequest) {
       title,
       author,
       description,
-      publication_year
+      publication_year,
+      cover_id
     `);
 
     // Filter by publication year range

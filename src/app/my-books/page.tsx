@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/select";
 import TagFilterInput from "@/components/TagFilterInput";
 import BookshelfButton from "@/components/BookshelfButton";
+import BookCover from "@/components/BookCover";
 import EditShelvesModal from "@/components/EditShelvesModal";
 import type { Bookshelf, Book } from "@/types";
 
@@ -348,7 +349,8 @@ export default function MyBooksPage() {
       ) : (
         <div className="border rounded-lg overflow-hidden">
           {/* Table header */}
-          <div className="hidden sm:grid sm:grid-cols-[2fr_2fr_80px_110px_100px] gap-4 items-center px-4 py-2 bg-muted/50 text-sm font-medium text-muted-foreground border-b">
+          <div className="hidden sm:grid sm:grid-cols-[40px_2fr_2fr_80px_110px_100px] gap-4 items-center px-4 py-2 bg-muted/50 text-sm font-medium text-muted-foreground border-b">
+            <span className="sr-only">Cover</span>
             <button
               type="button"
               className="flex items-center gap-1 hover:text-foreground text-left"
@@ -381,8 +383,10 @@ export default function MyBooksPage() {
           {books.map((book) => (
             <div
               key={book.id}
-              className="flex flex-col gap-2 px-4 py-3 border-b last:border-b-0 sm:grid sm:grid-cols-[2fr_2fr_80px_110px_100px] sm:items-center sm:gap-4"
+              className="flex flex-col gap-2 px-4 py-3 border-b last:border-b-0 sm:grid sm:grid-cols-[40px_2fr_2fr_80px_110px_100px] sm:items-center sm:gap-4"
             >
+              <BookCover coverId={book.cover_id} title={book.title} author={book.author} size="S" />
+
               <Link
                 href={`/books/${book.id}`}
                 className="font-medium text-foreground hover:underline truncate"
