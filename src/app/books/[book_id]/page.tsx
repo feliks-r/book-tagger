@@ -63,13 +63,15 @@ export default async function BookPage({ params }: PageProps) {
       
       {/* Title */}
       <div className="flex flex-col md:flex-row mt-0">
-        <BookCover
-          coverId={book.cover_id}
-          title={book.title}
-          author={book.author}
-          size="L"
-          className="m-auto mt-0 mb-4 md:m-0"
-        />
+        <div className="flex flex-col items-center gap-3 m-auto mt-0 mb-4 md:m-0 shrink-0">
+          <BookCover
+            coverId={book.cover_id}
+            title={book.title}
+            author={book.author}
+            size="L"
+          />
+          <BookshelfButton bookId={book.id} />
+        </div>
         <div className="flex flex-col mx-8">
           <h1 className="text-3xl font-bold mb-1 text-center md:text-left">{book.title}</h1>
           <p className="text-lg text-foreground/80 mb-5 text-center md:text-left">
@@ -79,10 +81,6 @@ export default async function BookPage({ params }: PageProps) {
           {book.description && (
             <p className="text-foreground leading-relaxed">{book.description}</p>
           )}
-
-          <div className="mt-4 flex justify-center md:justify-start">
-            <BookshelfButton bookId={book.id} />
-          </div>
         </div>
       </div>
 

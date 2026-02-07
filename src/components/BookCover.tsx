@@ -18,27 +18,43 @@ type BookCoverProps = {
   className?: string;
 };
 
+const placeholderTextClasses: Record<Size, { title: string; author: string } | null> = {
+  S: null,
+  M: {
+    title: "text-[0.6rem] leading-tight font-semibold text-muted-foreground line-clamp-3",
+    author: "text-[0.5rem] leading-tight text-muted-foreground/70 mt-0.5 line-clamp-2",
+  },
+  L: {
+    title: "text-sm leading-tight font-semibold text-muted-foreground line-clamp-4",
+    author: "text-xs leading-tight text-muted-foreground/70 mt-1 line-clamp-2",
+  },
+};
+
 function Placeholder({
   title,
   author,
+  size,
   sizeClass,
   className,
 }: {
   title: string;
   author: string;
+  size: Size;
   sizeClass: string;
   className?: string;
 }) {
+  const textClasses = placeholderTextClasses[size];
+
   return (
     <div
       className={`${sizeClass} ${className ?? ""} bg-muted rounded-sm flex flex-col items-center justify-center p-1.5 text-center overflow-hidden shrink-0`}
     >
-      <span className="text-[0.65rem] leading-tight font-semibold text-muted-foreground line-clamp-3">
-        {title}
-      </span>
-      <span className="text-[0.55rem] leading-tight text-muted-foreground/70 mt-0.5 line-clamp-2">
-        {author}
-      </span>
+      {textClasses && (
+        <>
+          <span className={textClasses.title}>{title}</span>
+          <span className={textClasses.author}>{author}</span>
+        </>
+      )}
     </div>
   );
 }
@@ -58,6 +74,7 @@ export default function BookCover({
       <Placeholder
         title={title}
         author={author}
+        size={size}
         sizeClass={sizeClass}
         className={className}
       />
