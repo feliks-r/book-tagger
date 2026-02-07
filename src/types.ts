@@ -74,6 +74,15 @@ export type BookshelfWithStatus = Bookshelf & {
   hasBook: boolean;
 };
 
+export type BookLink = {
+  id: string;
+  book_id: string;
+  label: string;
+  url: string;
+  display_order: number;
+  created_at: string;
+};
+
 export type TagProposal = {
   id: string;
   name: string;
