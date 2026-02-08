@@ -4,6 +4,7 @@ import TagSection from "@/components/TagSection";
 import BookshelfButton from "@/components/BookshelfButton";
 import BookCover from "@/components/BookCover";
 import ExpandableText from "@/components/ExpandableText";
+import Link from "next/link";
 import type { Book, BookTagWithVotes, GroupedCategory, BookLink } from "@/types";
 
 type PageProps = { 
@@ -18,12 +19,24 @@ export default async function BookPage({ params }: PageProps) {
   // Fetch book
   const { data: book, error: bookError } = await supabase
     .from("books")
-    .select("id, title, author, description, cover_id")
+    .select("id, title, author, description, cover_id, series_id, series_index")
     .eq("id", bookId)
     .single<Book>();
 
   if (bookError || !book) {
     return <div className="p-8">Book not found.</div>;
+  }
+
+  // ------------------------------------------------------------
+  // Fetch series name if book belongs to a series
+  let seriesName: string | null = null;
+  if (book.series_id) {
+    const { data: seriesData } = await supabase
+      .from("series")
+      .select("name")
+      .eq("id", book.series_id)
+      .single();
+    seriesName = seriesData?.name ?? null;
   }
 
   // ------------------------------------------------------------
@@ -108,9 +121,18 @@ export default async function BookPage({ params }: PageProps) {
           <div className="flex items-start justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold mb-1 text-center md:text-left">{book.title}</h1>
-              <p className="text-lg text-foreground/80 mb-5 text-center md:text-left">
+              <p className="text-lg text-foreground/80 text-center md:text-left">
                 by <span className="font-medium">{book.author}</span>
               </p>
+              {seriesName && book.series_id && (
+                <p className="text-sm text-muted-foreground mb-5 text-center md:text-left">
+                  <Link href={`/series/${book.series_id}`} className="hover:underline text-primary">
+                    {seriesName}
+                  </Link>
+                  {book.series_index != null && ` #${book.series_index}`}
+                </p>
+              )}
+              {!seriesName && <div className="mb-5" />}
             </div>
             {/* Bookshelf button - top right on desktop */}
             <div className="hidden md:block shrink-0">

@@ -20,6 +20,14 @@ export type Book = {
   description?: string | null;
   publication_year?: number | null;
   cover_id?: number | null;
+  series_id?: string | null;
+  series_index?: number | null;
+};
+
+export type Series = {
+  id: string;
+  name: string;
+  created_at: string;
 };
 
 export type TagCategory = {
