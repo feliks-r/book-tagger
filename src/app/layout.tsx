@@ -21,7 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={geist.className}>
-      <body className="min-h-screen dark">
+      <body className="min-h-screen">
         <AuthProvider>
           <Navbar />
           <main className="max-w-6xl min-h-screen mx-auto p-4">

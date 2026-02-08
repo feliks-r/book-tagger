@@ -98,7 +98,7 @@ export default function TagFilterInput({
           {selectedTags.map((tag) => (
             <span
               key={tag.id}
-              className="inline-flex items-center gap-1 px-2 py-1 text-sm bg-secondary text-secondary-foreground rounded-md"
+              className="inline-flex items-center gap-1 px-2 py-1 text-sm bg-muted text-muted-foreground rounded-md"
             >
               {tag.name}
               <button
@@ -124,7 +124,7 @@ export default function TagFilterInput({
           }}
           onFocus={() => setShowDropdown(true)}
           placeholder={placeholder}
-          className="max-w-100"
+          className="max-w-100 bg-background"
         />
 
         {/* Dropdown */}

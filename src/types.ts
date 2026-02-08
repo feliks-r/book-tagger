@@ -22,6 +22,15 @@ export type Book = {
   series_index?: number | null;
   series?: Series;
   olid?: string | null;
+  cover_id?: number | null;
+};
+
+export type BookLink = {
+  id: string;
+  book_id: string;
+  label: string;
+  url: string;
+  created_at: string;
 };
 
 export type TagCategory = {
@@ -73,13 +82,20 @@ export type TagProposal = {
   status: "pending" | "approved" | "rejected";
 };
 
-export type Shelf = {
-  id: string;
-  name: string;
-  display_order: number;
-}
 
 export type Series = {
   id: string;
   name: string;
 }
+
+export type Bookshelf = {
+  id: string;
+  name: string;
+  user_id: string;
+  display_order: number;
+  created_at: string;
+};
+
+export type BookshelfWithStatus = Bookshelf & {
+  hasBook: boolean;
+};

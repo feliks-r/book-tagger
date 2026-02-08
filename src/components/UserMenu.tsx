@@ -112,7 +112,7 @@ export function UserMenu({ user, profile }: UserMenuProps) {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={logout}
-          className="text-destructive-foreground focus:text-destructive-foreground hover:bg-destructive/10 focus:bg-destructive/10"
+          className="text-destructive-foreground focus:text-destructive-foreground hover:bg-destructive focus:bg-destructive"
         >
           <LogOut className="text-destructive-foreground mr-2 size-4 transition-colors" />
           Log Out

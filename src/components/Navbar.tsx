@@ -9,11 +9,12 @@ import { UserMenu } from './UserMenu'
 
 import { Search, BookOpen } from "lucide-react";
 import { Input } from '@/components/ui/input'
+import BookCover from './BookCover';
 
 import type { Book } from "@/types";
 
-import { MobileMenu } from './MobileMenu'
-import { NavLinks } from './NavLinks'
+import { MobileMenu } from './MobileMenu';
+import { NavLinks } from './NavLinks';
 
 export default function Navbar() {
   const { user, profile } = useAuth()
@@ -92,7 +93,7 @@ export default function Navbar() {
         </nav>
 
         {/*--------------------- Center: Search ---------------------*/}
-        <form ref={searchRef} onSubmit={handleSearch} className="w-72 relative">
+        <form ref={searchRef} onSubmit={handleSearch} className="w-90 relative">
 
           <Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground" />
           <Input
@@ -117,11 +118,14 @@ export default function Navbar() {
               suggestions.map((book) => (
                 <Link
                   key={book.id}
-                  className="cursor-pointer w-full px-2 py-1 block hover:bg-secondary rounded"
+                  className="cursor-pointer w-full px-2 py-1 block hover:bg-secondary rounded flex gap-2"
                   href={`/books/${book.id}`}
                 >
-                  <div>{book.title}</div>
-                  {book.author && <small className="text-gray-500">{book.author}</small>}
+                  <BookCover coverId={book.cover_id} title={book.title} author={book.author} size="S" />
+                  <div className='min-w-0'>
+                    <div className='text-md truncate'>{book.title}</div>
+                    {book.author && <small className="text-muted-foreground truncate block">{book.author}</small>}
+                  </div>
                 </Link>
               ))}
           </div>
