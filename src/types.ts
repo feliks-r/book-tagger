@@ -91,6 +91,18 @@ export type BookLink = {
   created_at: string;
 };
 
+export type UserTagPreference = {
+  id: string;
+  user_id: string;
+  tag_id: string;
+  preference: "saved" | "followed" | "hidden";
+  created_at: string;
+};
+
+export type TagWithPreferences = Tag & {
+  preferences: ("saved" | "followed" | "hidden")[];
+};
+
 export type TagProposal = {
   id: string;
   name: string;
