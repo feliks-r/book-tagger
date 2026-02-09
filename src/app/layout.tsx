@@ -37,11 +37,11 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-screen">
+      <body className="min-h-screen flex flex-col">
         <AuthProvider>
           <ThemeProvider>
             <Navbar />
-            <main className="max-w-6xl mx-auto p-4">
+            <main className="max-w-6xl mx-auto p-4 flex-1 w-full">
               {children}
               <BackToTop/>
             </main>
