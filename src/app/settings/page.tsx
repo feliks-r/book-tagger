@@ -124,6 +124,8 @@ function AccountTab() {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="Username"
+            autoComplete="off"
+            name="display-username"
           />
           <Button
             onClick={handleSaveUsername}
