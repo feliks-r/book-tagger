@@ -12,13 +12,13 @@ export async function GET(
     .from("tags")
     .select("id, name, description, category_id, tag_categories(name)")
     .eq("id", tag_id)
-    .single();
+    .single<{ id: string; name: string; description: string | null; category_id: string | null; tag_categories: { name: string } | null }>();
 
   if (error || !tag) {
     return NextResponse.json({ error: "Tag not found" }, { status: 404 });
   }
 
-  const category = tag.tag_categories as { name: string } | null;
+  const category = tag.tag_categories;
 
   return NextResponse.json({
     id: tag.id,

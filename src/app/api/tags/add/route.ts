@@ -33,6 +33,14 @@ export async function POST(req: Request) {
   }
 
   // Fetch the tag and category
+  type TagWithCategory = {
+    id: string;
+    name: string;
+    description: string | null;
+    category_id: string | null;
+    tag_categories: { name: string; display_order: number } | null;
+  };
+
   const { data: tagData, error: tagError } = await supabase
     .from("tags")
     .select(`
@@ -43,7 +51,7 @@ export async function POST(req: Request) {
       tag_categories(name, display_order)
     `)
     .eq("id", tagId)
-    .single();
+    .single<TagWithCategory>();
 
   if (tagError || !tagData) {
     console.error(tagError);
@@ -60,8 +68,7 @@ export async function POST(req: Request) {
   const score = votes?.reduce((sum, v) => sum + v.value, 0) ?? 0;
   const userVote = votes?.find((v) => v.user_id === user.id)?.value ?? 0;
 
-  // tag_categories is a single object (foreign key relation), not an array
-  const category = tagData.tag_categories as { name: string; display_order: number } | null;
+  const category = tagData.tag_categories;
 
   const tag: BookTagWithVotes = {
     id: tagData.id,

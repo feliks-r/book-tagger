@@ -37,8 +37,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!user) {
       // Not logged in: use system or localStorage fallback
-      const stored = localStorage.getItem("theme") as Theme | null
-      setThemeState(stored ?? "system")
+      const stored = typeof window !== "undefined" ? localStorage.getItem("theme") : null
+      const validThemes: Theme[] = ["light", "dark", "system"]
+      const fallback = stored && validThemes.includes(stored as Theme) ? (stored as Theme) : "system"
+      setThemeState(fallback)
       setLoaded(true)
       return
     }
@@ -47,11 +49,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       .from("user_preferences")
       .select("theme")
       .eq("user_id", user.id)
-      .single()
+      .single<{ theme: string }>()
       .then(({ data }) => {
-        const dbTheme = (data?.theme as Theme) ?? "system"
+        const validThemes: Theme[] = ["light", "dark", "system"]
+        const dbTheme = data?.theme && validThemes.includes(data.theme as Theme) ? (data.theme as Theme) : "system"
         setThemeState(dbTheme)
-        localStorage.setItem("theme", dbTheme)
+        if (typeof window !== "undefined") localStorage.setItem("theme", dbTheme)
         setLoaded(true)
       })
   }, [user, supabase])
@@ -74,7 +77,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     async (newTheme: Theme) => {
       setThemeState(newTheme)
       applyTheme(newTheme)
-      localStorage.setItem("theme", newTheme)
+      if (typeof window !== "undefined") localStorage.setItem("theme", newTheme)
 
       if (user) {
         await supabase

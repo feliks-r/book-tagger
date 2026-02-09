@@ -34,25 +34,25 @@ export async function GET(request: NextRequest) {
 
     const tagIds = Object.keys(tagCounts);
 
+    type TagRow = { id: string; name: string; description: string | null; category_id: string | null; tag_categories: { name: string } | null };
+
     const { data: tags } = await supabase
       .from("tags")
       .select("id, name, description, category_id, tag_categories(name)")
-      .in("id", tagIds);
+      .in("id", tagIds)
+      .returns<TagRow[]>();
 
     if (!tags) {
       return NextResponse.json({ tags: [] });
     }
 
-    const enriched = tags.map((tag) => {
-      const category = tag.tag_categories as { name: string } | null;
-      return {
-        id: tag.id,
-        name: tag.name,
-        description: tag.description,
-        category_name: category?.name ?? "",
-        book_count: tagCounts[tag.id] || 0,
-      };
-    });
+    const enriched = tags.map((tag) => ({
+      id: tag.id,
+      name: tag.name,
+      description: tag.description,
+      category_name: tag.tag_categories?.name ?? "",
+      book_count: tagCounts[tag.id] || 0,
+    }));
 
     enriched.sort((a, b) => b.book_count - a.book_count);
 
@@ -77,25 +77,25 @@ export async function GET(request: NextRequest) {
       addedMap[p.tag_id] = p.created_at;
     }
 
+    type TagRow = { id: string; name: string; description: string | null; category_id: string | null; tag_categories: { name: string } | null };
+
     const { data: tags } = await supabase
       .from("tags")
       .select("id, name, description, category_id, tag_categories(name)")
-      .in("id", tagIds);
+      .in("id", tagIds)
+      .returns<TagRow[]>();
 
     if (!tags) {
       return NextResponse.json({ tags: [] });
     }
 
-    const enriched = tags.map((tag) => {
-      const category = tag.tag_categories as { name: string } | null;
-      return {
-        id: tag.id,
-        name: tag.name,
-        description: tag.description,
-        category_name: category?.name ?? "",
-        added_at: addedMap[tag.id] || "",
-      };
-    });
+    const enriched = tags.map((tag) => ({
+      id: tag.id,
+      name: tag.name,
+      description: tag.description,
+      category_name: tag.tag_categories?.name ?? "",
+      added_at: addedMap[tag.id] || "",
+    }));
 
     enriched.sort((a, b) => b.added_at.localeCompare(a.added_at));
 

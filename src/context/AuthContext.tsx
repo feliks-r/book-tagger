@@ -29,9 +29,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .from("profiles")
       .select("id, username, role, avatar_url")
       .eq("id", userId)
-      .single()
+      .single<Profile>()
 
-    if (!error) {
+    if (!error && data) {
       setProfile(data)
     }
   }, [supabase])
