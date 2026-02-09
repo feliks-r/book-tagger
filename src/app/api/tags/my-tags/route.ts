@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
+type TagRow = {
+  id: string;
+  name: string;
+  description: string | null;
+  category_id: string | null;
+  tag_categories: { name: string } | null;
+};
+
 export async function GET(request: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -13,7 +21,6 @@ export async function GET(request: NextRequest) {
   const tab = url.searchParams.get("tab") || "upvoted";
 
   if (tab === "upvoted" || tab === "downvoted") {
-    // Get tags the user voted on (via book_tags)
     const voteValue = tab === "upvoted" ? 1 : -1;
 
     const { data: votes } = await supabase
@@ -26,15 +33,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ tags: [] });
     }
 
-    // Count how many books each tag was voted on
     const tagCounts: Record<string, number> = {};
     for (const v of votes) {
       tagCounts[v.tag_id] = (tagCounts[v.tag_id] || 0) + 1;
     }
 
     const tagIds = Object.keys(tagCounts);
-
-    type TagRow = { id: string; name: string; description: string | null; category_id: string | null; tag_categories: { name: string } | null };
 
     const { data: tags } = await supabase
       .from("tags")
@@ -60,47 +64,52 @@ export async function GET(request: NextRequest) {
   }
 
   // saved / followed / hidden
-  if (["saved", "followed", "hidden"].includes(tab)) {
-    const { data: prefs } = await supabase
-      .from("user_tag_preferences")
-      .select("tag_id, created_at")
-      .eq("user_id", user.id)
-      .eq("preference", tab);
+  const fieldMap: Record<string, string> = {
+    saved: "is_saved",
+    followed: "is_followed",
+    hidden: "is_hidden",
+  };
 
-    if (!prefs || prefs.length === 0) {
-      return NextResponse.json({ tags: [] });
-    }
-
-    const tagIds = prefs.map((p) => p.tag_id);
-    const addedMap: Record<string, string> = {};
-    for (const p of prefs) {
-      addedMap[p.tag_id] = p.created_at;
-    }
-
-    type TagRow = { id: string; name: string; description: string | null; category_id: string | null; tag_categories: { name: string } | null };
-
-    const { data: tags } = await supabase
-      .from("tags")
-      .select("id, name, description, category_id, tag_categories(name)")
-      .in("id", tagIds)
-      .returns<TagRow[]>();
-
-    if (!tags) {
-      return NextResponse.json({ tags: [] });
-    }
-
-    const enriched = tags.map((tag) => ({
-      id: tag.id,
-      name: tag.name,
-      description: tag.description,
-      category_name: tag.tag_categories?.name ?? "",
-      added_at: addedMap[tag.id] || "",
-    }));
-
-    enriched.sort((a, b) => b.added_at.localeCompare(a.added_at));
-
-    return NextResponse.json({ tags: enriched });
+  const field = fieldMap[tab];
+  if (!field) {
+    return NextResponse.json({ error: "Invalid tab" }, { status: 400 });
   }
 
-  return NextResponse.json({ error: "Invalid tab" }, { status: 400 });
+  const { data: prefs } = await supabase
+    .from("user_tag_preferences")
+    .select("tag_id, updated_at")
+    .eq("user_id", user.id)
+    .eq(field, true);
+
+  if (!prefs || prefs.length === 0) {
+    return NextResponse.json({ tags: [] });
+  }
+
+  const tagIds = prefs.map((p) => p.tag_id);
+  const dateMap: Record<string, string> = {};
+  for (const p of prefs) {
+    dateMap[p.tag_id] = p.updated_at;
+  }
+
+  const { data: tags } = await supabase
+    .from("tags")
+    .select("id, name, description, category_id, tag_categories(name)")
+    .in("id", tagIds)
+    .returns<TagRow[]>();
+
+  if (!tags) {
+    return NextResponse.json({ tags: [] });
+  }
+
+  const enriched = tags.map((tag) => ({
+    id: tag.id,
+    name: tag.name,
+    description: tag.description,
+    category_name: tag.tag_categories?.name ?? "",
+    added_at: dateMap[tag.id] || "",
+  }));
+
+  enriched.sort((a, b) => b.added_at.localeCompare(a.added_at));
+
+  return NextResponse.json({ tags: enriched });
 }

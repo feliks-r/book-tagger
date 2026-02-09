@@ -3,55 +3,54 @@
 import { useState, useEffect, useCallback } from "react";
 import { Bookmark, Bell, EyeOff } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import type { TagPreferences } from "@/types";
 
-type Preference = "saved" | "followed" | "hidden";
+type PreferenceField = keyof TagPreferences;
 
-const icons: { pref: Preference; Icon: typeof Bookmark; label: string }[] = [
-  { pref: "saved", Icon: Bookmark, label: "Save" },
-  { pref: "followed", Icon: Bell, label: "Follow" },
-  { pref: "hidden", Icon: EyeOff, label: "Hide" },
+const icons: { field: PreferenceField; Icon: typeof Bookmark; label: string }[] = [
+  { field: "is_saved", Icon: Bookmark, label: "Save" },
+  { field: "is_followed", Icon: Bell, label: "Follow" },
+  { field: "is_hidden", Icon: EyeOff, label: "Hide" },
 ];
 
 export default function TagPreferenceIcons({ tagId }: { tagId: string }) {
   const { user } = useAuth();
-  const [active, setActive] = useState<Set<Preference>>(new Set());
-  const [loading, setLoading] = useState<Preference | null>(null);
+  const [prefs, setPrefs] = useState<TagPreferences>({
+    is_saved: false,
+    is_followed: false,
+    is_hidden: false,
+  });
+  const [loading, setLoading] = useState<PreferenceField | null>(null);
 
   const fetchPrefs = useCallback(async () => {
     const res = await fetch(`/api/tags/${tagId}/preferences`);
     if (!res.ok) return;
-    const data = await res.json();
-    setActive(new Set(data.preferences));
+    const data: TagPreferences = await res.json();
+    setPrefs(data);
   }, [tagId]);
 
   useEffect(() => {
     if (user) fetchPrefs();
   }, [user, fetchPrefs]);
 
-  async function toggle(pref: Preference) {
+  async function toggle(field: PreferenceField) {
     if (!user || loading) return;
 
-    const previous = new Set(active);
+    const previous = { ...prefs };
     // Optimistic update
-    const next = new Set(active);
-    if (next.has(pref)) {
-      next.delete(pref);
-    } else {
-      next.add(pref);
-    }
-    setActive(next);
-    setLoading(pref);
+    setPrefs((prev) => ({ ...prev, [field]: !prev[field] }));
+    setLoading(field);
 
     try {
       const res = await fetch(`/api/tags/${tagId}/preferences`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ preference: pref }),
+        body: JSON.stringify({ field }),
       });
       if (!res.ok) throw new Error("Failed");
     } catch {
       // Rollback
-      setActive(previous);
+      setPrefs(previous);
     } finally {
       setLoading(null);
     }
@@ -61,20 +60,20 @@ export default function TagPreferenceIcons({ tagId }: { tagId: string }) {
 
   return (
     <div className="flex items-center gap-1">
-      {icons.map(({ pref, Icon, label }) => {
-        const isActive = active.has(pref);
+      {icons.map(({ field, Icon, label }) => {
+        const isActive = prefs[field];
         return (
           <button
-            key={pref}
+            key={field}
             type="button"
-            onClick={() => toggle(pref)}
+            onClick={() => toggle(field)}
             disabled={loading !== null}
             title={isActive ? `Remove ${label.toLowerCase()}` : label}
             className={`p-2 rounded-md transition-colors ${
               isActive
                 ? "text-primary bg-primary/10"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted"
-            } ${loading === pref ? "opacity-50" : ""}`}
+            } ${loading === field ? "opacity-50" : ""}`}
             aria-label={label}
           >
             <Icon className="h-5 w-5" fill={isActive ? "currentColor" : "none"} />
