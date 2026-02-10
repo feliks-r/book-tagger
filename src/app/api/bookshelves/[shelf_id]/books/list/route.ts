@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { parseAuthorsJoin } from "@/lib/authors";
 
 type RouteContext = { params: Promise<{ shelf_id: string }> };
 
@@ -58,7 +59,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
     // Fetch book details
     let query = supabase
       .from("books")
-      .select("id, title, author, description, publication_year, cover_id")
+      .select("id, title, description, publication_year, cover_id, book_authors(display_order, authors(id, name))")
       .in("id", bookIds);
 
     if (titleQuery) {
@@ -120,9 +121,14 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
       });
     }
 
-    // Add added_at to each book
-    const booksWithDate = filteredBooks.map((book) => ({
-      ...book,
+    // Add added_at and flatten authors
+    const booksWithDate = filteredBooks.map((book: any) => ({
+      id: book.id,
+      title: book.title,
+      description: book.description,
+      publication_year: book.publication_year,
+      cover_id: book.cover_id,
+      authors: parseAuthorsJoin(book.book_authors),
       added_at: addedAtMap[book.id] || null,
     }));
 

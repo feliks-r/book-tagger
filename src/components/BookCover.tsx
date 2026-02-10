@@ -13,7 +13,7 @@ const sizeClasses: Record<Size, string> = {
 type BookCoverProps = {
   coverId?: number | null;
   title: string;
-  author: string;
+  author?: string;
   size?: Size;
   className?: string;
 };
@@ -38,7 +38,7 @@ function Placeholder({
   className,
 }: {
   title: string;
-  author: string;
+  author?: string;
   size: Size;
   sizeClass: string;
   className?: string;
@@ -52,7 +52,7 @@ function Placeholder({
       {textClasses && (
         <>
           <span className={textClasses.title}>{title}</span>
-          <span className={textClasses.author}>{author}</span>
+          {author && <span className={textClasses.author}>{author}</span>}
         </>
       )}
     </div>
@@ -62,7 +62,7 @@ function Placeholder({
 export default function BookCover({
   coverId,
   title,
-  author,
+  author = "",
   size = "M",
   className,
 }: BookCoverProps) {

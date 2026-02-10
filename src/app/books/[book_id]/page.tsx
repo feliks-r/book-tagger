@@ -5,7 +5,8 @@ import BookshelfButton from "@/components/BookshelfButton";
 import BookCover from "@/components/BookCover";
 import ExpandableText from "@/components/ExpandableText";
 import Link from "next/link";
-import type { Book, BookTagWithVotes, GroupedCategory, BookLink } from "@/types";
+import { parseAuthorsJoin, formatAuthors } from "@/lib/authors";
+import type { BookTagWithVotes, GroupedCategory, BookLink, Author } from "@/types";
 
 type PageProps = { 
   params: Promise<{ book_id: string }>;
@@ -17,15 +18,19 @@ export default async function BookPage({ params }: PageProps) {
 
   // ------------------------------------------------------------
   // Fetch book
-  const { data: book, error: bookError } = await supabase
+  const { data: rawBook, error: bookError } = await supabase
     .from("books")
-    .select("id, title, author, description, cover_id, series_id, series_index")
+    .select("id, title, description, cover_id, series_id, series_index, book_authors(display_order, authors(id, name))")
     .eq("id", bookId)
-    .single<Book>();
+    .single();
 
-  if (bookError || !book) {
+  if (bookError || !rawBook) {
     return <div className="p-8">Book not found.</div>;
   }
+
+  const authors: Author[] = parseAuthorsJoin((rawBook as any).book_authors);
+  const authorsText = formatAuthors(authors);
+  const book = { ...rawBook, authors };
 
   // ------------------------------------------------------------
   // Fetch series name if book belongs to a series
@@ -92,7 +97,7 @@ export default async function BookPage({ params }: PageProps) {
           <BookCover
             coverId={book.cover_id}
             title={book.title}
-            author={book.author}
+            author={authorsText}
             size="L"
           />
 
@@ -122,7 +127,13 @@ export default async function BookPage({ params }: PageProps) {
             <div>
               <h1 className="text-3xl font-bold mb-1 text-center md:text-left">{book.title}</h1>
               <p className="text-lg text-foreground/80 text-center md:text-left">
-                by <span className="font-medium">{book.author}</span>
+                {"by "}
+                {authors.map((a, i) => (
+                  <span key={a.id}>
+                    {i > 0 && (i === authors.length - 1 ? " and " : ", ")}
+                    <Link href={`/authors/${a.id}`} className="font-medium hover:underline">{a.name}</Link>
+                  </span>
+                ))}
               </p>
               {seriesName && book.series_id && (
                 <p className="text-sm text-muted-foreground mb-5 text-center md:text-left">

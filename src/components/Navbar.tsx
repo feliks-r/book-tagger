@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input'
 
 import type { Book } from "@/types";
 import BookCover from "@/components/BookCover";
+import { formatAuthors } from "@/lib/authors";
 
 import { MobileMenu } from './MobileMenu'
 import { NavLinks } from './NavLinks'
@@ -119,10 +120,10 @@ export default function Navbar() {
                   className="cursor-pointer w-full px-2 py-1.5 flex items-center gap-2 hover:bg-secondary"
                   href={`/books/${book.id}`}
                 >
-                  <BookCover coverId={book.cover_id} title={book.title} author={book.author} size="S" />
+                  <BookCover coverId={book.cover_id} title={book.title} author={formatAuthors(book.authors)} size="S" />
                   <div className="min-w-0">
                     <div className="truncate text-sm">{book.title}</div>
-                    {book.author && <small className="text-muted-foreground truncate block">{book.author}</small>}
+                    {book.authors?.length > 0 && <small className="text-muted-foreground truncate block">{formatAuthors(book.authors)}</small>}
                   </div>
                 </Link>
               ))}

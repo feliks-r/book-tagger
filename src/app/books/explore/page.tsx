@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/collapsible";
 import TagFilterInput from "@/components/TagFilterInput";
 import BookCover from "@/components/BookCover";
+import { formatAuthors } from "@/lib/authors";
 import type { Book } from "@/types";
 
 type SelectedTag = {
@@ -206,12 +207,12 @@ export default function ExplorePage() {
               <BookCover
                 coverId={book.cover_id}
                 title={book.title}
-                author={book.author}
+                author={formatAuthors(book.authors)}
                 size="M"
               />
               <div className="min-w-0 flex-1">
                 <h2 className="text-lg font-semibold text-foreground">{book.title}</h2>
-                <p className="text-muted-foreground">{book.author}</p>
+                <p className="text-muted-foreground">{formatAuthors(book.authors)}</p>
                 {book.publication_year && (
                   <p className="text-sm text-muted-foreground mt-1">
                     Published: {book.publication_year}

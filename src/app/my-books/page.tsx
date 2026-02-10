@@ -27,6 +27,7 @@ import TagFilterInput from "@/components/TagFilterInput";
 import BookshelfButton from "@/components/BookshelfButton";
 import BookCover from "@/components/BookCover";
 import EditShelvesModal from "@/components/EditShelvesModal";
+import { formatAuthors } from "@/lib/authors";
 import type { Bookshelf, Book } from "@/types";
 
 type SelectedTag = { id: string; name: string };
@@ -385,7 +386,7 @@ export default function MyBooksPage() {
               key={book.id}
               className="flex flex-col gap-2 px-4 py-3 border-b last:border-b-0 sm:grid sm:grid-cols-[40px_2fr_2fr_80px_110px_100px] sm:items-center sm:gap-4"
             >
-              <BookCover coverId={book.cover_id} title={book.title} author={book.author} size="S" />
+              <BookCover coverId={book.cover_id} title={book.title} author={formatAuthors(book.authors)} size="S" />
 
               <Link
                 href={`/books/${book.id}`}
@@ -394,12 +395,9 @@ export default function MyBooksPage() {
                 {book.title}
               </Link>
 
-              <Link
-                href={`/authors/${encodeURIComponent(book.author)}`}
-                className="text-sm text-muted-foreground hover:underline truncate"
-              >
-                {book.author}
-              </Link>
+              <span className="text-sm text-muted-foreground truncate">
+                {formatAuthors(book.authors)}
+              </span>
 
               <span className="text-sm text-muted-foreground">
                 {book.publication_year || "-"}

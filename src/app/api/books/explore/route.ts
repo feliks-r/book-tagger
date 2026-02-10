@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { parseAuthorsJoin } from "@/lib/authors";
 
 export async function GET(request: NextRequest) {
   const supabase = await createClient();
@@ -16,10 +17,10 @@ export async function GET(request: NextRequest) {
     let query = supabase.from("books").select(`
       id,
       title,
-      author,
       description,
       publication_year,
-      cover_id
+      cover_id,
+      book_authors(display_order, authors(id, name))
     `);
 
     // Filter by publication year range
@@ -85,7 +86,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Calculate relevance score for sorting
-    const booksWithScores = filteredBooks.map((book) => {
+    const booksWithScores = filteredBooks.map((book: any) => {
       const tagScores = bookTagScores[book.id] || {};
 
       // Best match: sum of included tag scores
@@ -110,9 +111,20 @@ export async function GET(request: NextRequest) {
       booksWithScores.sort((a, b) => b.popularity - a.popularity);
     }
 
+    const results = booksWithScores.map((book: any) => ({
+      id: book.id,
+      title: book.title,
+      description: book.description,
+      publication_year: book.publication_year,
+      cover_id: book.cover_id,
+      authors: parseAuthorsJoin(book.book_authors),
+      matchScore: book.matchScore,
+      popularity: book.popularity,
+    }));
+
     return NextResponse.json({
-      books: booksWithScores,
-      total: booksWithScores.length,
+      books: results,
+      total: results.length,
     });
   } catch (err) {
     console.error("Search error:", err);

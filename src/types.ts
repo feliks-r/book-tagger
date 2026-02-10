@@ -13,10 +13,15 @@ export type Profile = {
   avatar_url: string | null
 }
 
+export type Author = {
+  id: string;
+  name: string;
+};
+
 export type Book = {
   id: string;
   title: string;
-  author: string;
+  authors: Author[];
   description?: string | null;
   publication_year?: number | null;
   cover_id?: number | null;

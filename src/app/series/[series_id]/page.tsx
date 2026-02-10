@@ -2,7 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import BookCover from "@/components/BookCover";
 import BookshelfButton from "@/components/BookshelfButton";
-import type { Series, Book } from "@/types";
+import { parseAuthorsJoin, formatAuthors } from "@/lib/authors";
+import type { Series, Book, Author } from "@/types";
 
 type PageProps = {
   params: Promise<{ series_id: string }>;
@@ -28,9 +29,9 @@ export default async function SeriesPage({ params }: PageProps) {
   }
 
   // Fetch books in the series, ordered by series_index
-  const { data: books, error: booksError } = await supabase
+  const { data: rawBooks, error: booksError } = await supabase
     .from("books")
-    .select("id, title, author, description, publication_year, cover_id, series_id, series_index")
+    .select("id, title, description, publication_year, cover_id, series_id, series_index, book_authors(display_order, authors(id, name))")
     .eq("series_id", seriesId)
     .order("series_index", { ascending: true, nullsFirst: false });
 
@@ -38,7 +39,10 @@ export default async function SeriesPage({ params }: PageProps) {
     console.error("Failed to fetch series books:", booksError);
   }
 
-  const seriesBooks: SeriesBook[] = (books as SeriesBook[]) || [];
+  const seriesBooks: SeriesBook[] = (rawBooks || []).map((b: any) => ({
+    ...b,
+    authors: parseAuthorsJoin(b.book_authors),
+  }));
 
   return (
     <div className="mx-auto max-w-4xl p-2 md:p-8 space-y-6">
@@ -70,7 +74,7 @@ export default async function SeriesPage({ params }: PageProps) {
             <BookCover
               coverId={book.cover_id}
               title={book.title}
-              author={book.author}
+              author={formatAuthors(book.authors)}
               size="M"
             />
 
@@ -83,7 +87,7 @@ export default async function SeriesPage({ params }: PageProps) {
                 {book.title}
               </Link>
               <p className="text-sm text-muted-foreground mt-0.5">
-                by {book.author}
+                {"by "}{formatAuthors(book.authors)}
               </p>
               {book.publication_year && (
                 <p className="text-sm text-muted-foreground mt-0.5">

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { parseAuthorsJoin } from "@/lib/authors";
 
 export async function GET(
   request: NextRequest,
@@ -45,16 +46,21 @@ export async function GET(
   // Fetch books
   const { data: books } = await supabase
     .from("books")
-    .select("id, title, author, description, publication_year, cover_id")
+    .select("id, title, description, publication_year, cover_id, book_authors(display_order, authors(id, name))")
     .in("id", bookIds);
 
   if (!books) {
     return NextResponse.json({ books: [], total: 0 });
   }
 
-  // Enrich with score
-  const enriched = books.map((book) => ({
-    ...book,
+  // Enrich with score and flatten authors
+  const enriched = books.map((book: any) => ({
+    id: book.id,
+    title: book.title,
+    description: book.description,
+    publication_year: book.publication_year,
+    cover_id: book.cover_id,
+    authors: parseAuthorsJoin(book.book_authors),
     tagScore: bookScores[book.id] || 0,
     userTagged: userTagged.has(book.id),
   }));

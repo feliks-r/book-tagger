@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { parseAuthorsJoin } from "@/lib/authors";
 
-// api route for searching tbooks by input text 
+// api route for searching books by input text 
 // used in the search bar on top
 
 export async function GET(req: Request) {
@@ -18,8 +19,8 @@ export async function GET(req: Request) {
     .select(`
       id,
       title,
-      author,
-      cover_id
+      cover_id,
+      book_authors(display_order, authors(id, name))
     `)
     .ilike("title", `%${query}%`)
     .limit(6);
@@ -28,5 +29,12 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ books: data });
+  const books = (data || []).map((book) => ({
+    id: book.id,
+    title: book.title,
+    cover_id: book.cover_id,
+    authors: parseAuthorsJoin(book.book_authors as any),
+  }));
+
+  return NextResponse.json({ books });
 }
