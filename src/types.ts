@@ -13,11 +13,26 @@ export type Profile = {
   avatar_url: string | null
 }
 
+export type Author = {
+  id: string;
+  name: string;
+};
+
 export type Book = {
   id: string;
   title: string;
-  author: string;
+  authors: Author[];
   description?: string | null;
+  publication_year?: number | null;
+  cover_id?: number | null;
+  series_id?: string | null;
+  series_index?: number | null;
+};
+
+export type Series = {
+  id: string;
+  name: string;
+  created_at: string;
 };
 
 export type TagCategory = {
@@ -57,12 +72,44 @@ export type GroupedCategory = {
     categoryId: string;
     categoryName: string;
     displayOrder: number;
-    tags: {
-      id: string;
-      name: string;
-      description: string | null;
-      score: number;
-    }[];
+    tags: BookTagWithVotes[];
+};
+
+export type Bookshelf = {
+  id: string;
+  name: string;
+  user_id: string;
+  display_order: number;
+  created_at: string;
+};
+
+export type BookshelfWithStatus = Bookshelf & {
+  hasBook: boolean;
+};
+
+export type BookLink = {
+  id: string;
+  book_id: string;
+  label: string;
+  url: string;
+  display_order: number;
+  created_at: string;
+};
+
+export type UserTagPreference = {
+  id: string;
+  user_id: string;
+  tag_id: string;
+  is_saved: boolean;
+  is_followed: boolean;
+  is_hidden: boolean;
+  updated_at: string;
+};
+
+export type TagPreferences = {
+  is_saved: boolean;
+  is_followed: boolean;
+  is_hidden: boolean;
 };
 
 export type TagProposal = {
