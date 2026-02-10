@@ -5,9 +5,15 @@ import { useState } from "react";
 type Size = "S" | "M" | "L";
 
 const sizeClasses: Record<Size, string> = {
-  S: "w-12 h-16 p-1",
-  M: "w-[120px] h-[180px] p-2",
-  L: "w-[180px] h-[270px] p-3",
+  S: "w-11 h-16",
+  M: "w-[110px] h-[160px]",
+  L: "w-[180px] h-[270px] ",
+};
+
+const placeholderClasses: Record<Size, string> = {
+  S: "p-1.5",
+  M: "p-2",
+  L: "p-3",
 };
 
 const placeholderTextClasses: Record<Size, { title: string; author: string } | null> = {
@@ -44,11 +50,12 @@ function Placeholder({
   className?: string;
 }) {
   const textClasses = placeholderTextClasses[size];
+  const placeholderClass = placeholderClasses[size]
   return (
     <div
-      className={`${sizeClass} ${className ?? ""} bg-muted rounded-sm flex flex-col items-center justify-center text-center overflow-hidden shrink-0`}
+      className={`${sizeClass} ${placeholderClass} ${className ?? ""} bg-muted rounded-sm flex flex-col items-center justify-center text-center overflow-hidden shrink-0`}
     >
-      <div className="border border-muted-foreground/60 grow flex flex-col items-center justify-center text-center overflow-hidden shrink-0 m-0 w-full">
+      <div className="border border-muted-foreground/60 grow flex flex-col items-center justify-center text-center overflow-hidden shrink-0 m-0 w-full p-1">
         {textClasses && (
         <>
           <span className={textClasses.title}>{title}</span>
@@ -81,6 +88,8 @@ export default function BookCover({
       />
     );
   }
+
+  if (size=="S"){size = "M"}
 
   return (
     <img

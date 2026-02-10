@@ -37,14 +37,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [supabase])
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user)
-      if (data.user) fetchProfile(data.user.id)
+    // getSession() for fast initial hydration from cookies (no network call).
+    // The onAuthStateChange listener handles token refresh automatically.
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      const currentUser = session?.user ?? null
+      setUser(currentUser)
+      if (currentUser) fetchProfile(currentUser.id)
       setLoading(false)
     })
 
     const { data: listener } = supabase.auth.onAuthStateChange(
-      async (_, session) => {
+      async (_event, session) => {
         const nextUser = session?.user ?? null
         setUser(nextUser)
 

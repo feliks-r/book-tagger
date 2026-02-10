@@ -205,13 +205,13 @@ export default function MyBooksPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-5xl">
+    <div className="mx-auto px-4 py-8 max-w-5xl mb-20">
 
       {/*-------- Header with shelf selector --------*/}
-      <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-3xl font-bold text-foreground">My Books</h1>
+      <h1 className="text-3xl font-bold text-foreground mb-4">My Books</h1>
 
-        <div className="flex items-center gap-2">
+      <div className="flex justify-between items-center mb-6 flex-col md:flex-row gap-4">
+        <div className="flex items-center gap-2 block">
           <span>Bookshelf:</span>
           <Select value={selectedShelfId} onValueChange={setSelectedShelfId}>
             <SelectTrigger className="w-52">
@@ -236,29 +236,28 @@ export default function MyBooksPage() {
             <span className="sr-only">Edit bookshelves</span>
           </Button>
         </div>
-      </div>
 
-      {/*-------- Title search --------*/}
-      <div className="mb-4">
+        {/*-------- Title search --------*/}
         <form
           onSubmit={(e) => {
             e.preventDefault();
             fetchBooks();
           }}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 block"
         >
           <Input
             type="text"
             value={titleQuery}
             onChange={(e) => setTitleQuery(e.target.value)}
             placeholder="Search by title..."
-            className="flex-1"
+            className="w-90"
           />
-          <Button type="submit" variant="outline" disabled={isFetchingBooks}>
+          {/* <Button type="submit" variant="outline" disabled={isFetchingBooks}>
             Search
-          </Button>
+          </Button> */}
         </form>
       </div>
+      
 
       {/*--------------------------------- Collapsible tag/year filters ---------------------------------*/}
       {/*________________________________________________________________________________________________*/}
@@ -400,7 +399,7 @@ export default function MyBooksPage() {
                   {book.title}
                 </Link>
                 {book.series && <Link
-                  href={`/books/${book.id}`}
+                  href={`/series/${book.series.id}`}
                   className="font-sm text-sm text-foreground/70 hover:underline block"
                 >
                   {book.series.name} #{book.series_index}

@@ -169,7 +169,7 @@ export default async function BookPage({ params }: PageProps) {
         </div>
       </div>
 
-      <div className="border-t" />
+      <div className="border-t-2 border-secondary" />
       
       {/* Tags */}
       <div>

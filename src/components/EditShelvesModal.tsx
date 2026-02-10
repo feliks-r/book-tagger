@@ -187,7 +187,7 @@ export default function EditShelvesModal({
         <DialogHeader>
           <DialogTitle>Edit Bookshelves</DialogTitle>
           <DialogDescription>
-            Drag to reorder, rename, or delete your bookshelves.
+            Add, rename or delete your bookshelves. Drag and drop to reorder.
           </DialogDescription>
         </DialogHeader>
 

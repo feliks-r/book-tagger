@@ -70,7 +70,7 @@ export default function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 border-b bg-background z-50">
+    <header className="sticky top-0 border-b-1 z-50 bg-background">
       <div className="max-w-7xl mx-auto p-0 flex items-center justify-between min-h-12">
 
         {/*--------------------- Mobile (hamburger menu) ---------------------*/}

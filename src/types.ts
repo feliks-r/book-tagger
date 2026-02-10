@@ -99,3 +99,23 @@ export type Bookshelf = {
 export type BookshelfWithStatus = Bookshelf & {
   hasBook: boolean;
 };
+
+export type TagPreferences = {
+  is_saved: boolean;
+  is_followed: boolean;
+  is_hidden: boolean;
+};
+
+export type UserTagPreference = {
+  id: string;
+  user_id: string;
+  tag_id: string;
+  is_saved: boolean;
+  is_followed: boolean;
+  is_hidden: boolean;
+  updated_at: string;
+};
+
+export type TagWithPreferences = Tag & {
+  preferences: ("saved" | "followed" | "hidden")[];
+};

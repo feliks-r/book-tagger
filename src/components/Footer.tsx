@@ -25,8 +25,8 @@ export default function Footer(){
                 <h3 className="mb-3 font-medium text-foreground">Contact</h3>
                 <ul className="space-y-2">
                 <li>
-                    E-mail: 
-                    <a href="mailto:contact@sitename.example" className="hover:text-foreground hover:underline ml-1 inline-block">
+                    <span className='text-foreground'>E-mail: </span>
+                    <a href="mailto:contact@sitename.example" className="hover:text-foreground hover:underline inline-block">
                       contact@sitename.example
                     </a>
                 </li>
@@ -54,13 +54,13 @@ export default function Footer(){
             </div>
 
             {/* Attribution */}
-            <div>
-                <h3 className="mb-3 font-medium text-foreground">About this site</h3>
+            <div className="text-foreground">
+                <h3 className="mb-3 font-medium">About this site</h3>
                 <p className="leading-relaxed">
-                Site Name is a community-driven project for organizing and exploring books.
+                Booksonomy is a community-driven project for organizing and finding books by tags.
                 </p>
                 <p className="mt-2">
-                Built and maintained by <span className="text-foreground">Name</span>.
+                Built and maintained by <span className="text-muted-foreground">Name</span>.
                 </p>
             </div>
             </div>

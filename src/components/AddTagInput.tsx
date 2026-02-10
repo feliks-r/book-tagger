@@ -175,11 +175,11 @@ export default function AddTagInput({ bookId, onTagAdded }: Props) {
                 onClick={() => handleSelect(tag)}
               >
                 <div className="inline-block">{tag.name}</div>
-                {tag.category && <small className="text-gray-400 inline-block ml-2">({tag.category.name})</small>}
+                {tag.category && <small className="text-foreground/60 inline-block ml-2">({tag.category.name})</small>}
               </div>
             ))}
           <div className="border-t" />
-          <div className="cursor-pointer px-3 py-2 text-sm text-primary hover:bg-secondary rounded" onClick={openProposeModal}>
+          <div className="cursor-pointer px-3 py-2 text-sm text-primary hover:bg-card rounded" onClick={openProposeModal}>
             Propose new tag: <strong>{query}</strong>
           </div>
         </div>
