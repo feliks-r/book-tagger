@@ -28,6 +28,8 @@ import BookshelfButton from "@/components/BookshelfButton";
 import EditShelvesModal from "@/components/EditShelvesModal";
 import BookCover from "@/components/BookCover";
 import type { Bookshelf, Book } from "@/types";
+import { formatAuthors } from "@/lib/authors";
+import { BooksTable, BooksColumn } from "@/components/BooksTable";
 
 type SelectedTag = { id: string; name: string };
 
@@ -54,7 +56,7 @@ export default function MyBooksPage() {
   const [yearTo, setYearTo] = useState("");
 
   // Sorting
-  const [sortBy, setSortBy] = useState<"added_at" | "title" | "publication_year">("added_at");
+  const [sortBy, setSortBy] = useState("added_at");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
 
   // Fetch shelves
@@ -101,7 +103,7 @@ export default function MyBooksPage() {
     if (yearTo) params.set("yearTo", yearTo);
     params.set("sort", sortBy);
     params.set("dir", sortDir);
-
+    
     try {
       const res = await fetch(
         `/api/bookshelves/${selectedShelfId}/books/list?${params.toString()}`
@@ -130,7 +132,7 @@ export default function MyBooksPage() {
     fetchBooks();
   }
 
-  function handleSortToggle(column: "added_at" | "title" | "publication_year") {
+  function handleSortToggle(column: string) {
     if (sortBy === column) {
       setSortDir((d) => (d === "asc" ? "desc" : "asc"));
     } else {
@@ -195,14 +197,107 @@ export default function MyBooksPage() {
 
   const selectedShelf = shelves.find((s) => s.id === selectedShelfId);
 
-  function SortIndicator({ column }: { column: string }) {
-    if (sortBy !== column) return <ArrowUpDown className="size-3.5" />;
-    return sortDir === "asc" ? (
-      <ChevronUp className="size-3.5" />
-    ) : (
-      <ChevronDown className="size-3.5" />
-    );
-  }
+  //------------------------------------------------ Columns ------------------------------------------------
+  const columns: BooksColumn<ShelfBook>[] = [
+    {
+      id: "cover",
+      header: "Cover",
+      width: "w-[46px]",
+      mobile: "cover",
+      render: (book) => (
+        <>
+        <BookCover
+          coverId={book.cover_id}
+          title={book.title}
+          author={formatAuthors(book.authors)}
+          className="hidden sm:flex"
+          size="S"
+        />
+        <BookCover
+          coverId={book.cover_id}
+          title={book.title}
+          author={formatAuthors(book.authors)}
+          className="flex sm:hidden"
+          size="M"
+        />
+        </>
+      ),
+    },
+    {
+      id: "title",
+      header: "Title",
+      sortable: true,
+      mobile: "main",
+      render: (book) => (
+        <>
+        <Link
+          href={`/books/${book.id}`}
+          className="text-lg/6 sm:text-sm font-medium text-foreground hover:underline truncate inline sm:block text-wrap mr-1 sm:mr-0"
+        >
+          {book.title}
+        </Link>
+        {book.series && <Link
+          href={`/series/${book.series.id}`}
+          className="text-lg/6 sm:text-sm text-muted-foreground/90 hover:underline truncate inline sm:block text-wrap"
+        >
+          ({book.series.name} #{book.series_index})
+        </Link>}
+        </>
+      ),
+    },
+    {
+      id: "author",
+      header: "Author(s)",
+      mobile: "main",
+      render: (book) => (
+        <>
+        <span className="text-muted-foreground sm:hidden">by </span>
+        {book.authors.map((a, i) => (
+                    <span key={a.id}>
+                      {i > 0 && ", "}
+                      <Link href={`/authors/${a.id}`} className="text-muted-foreground hover:underline font-medium sm:font-normal">{a.name}</Link>
+                    </span>
+                  ))}
+        </>
+      ),
+    },
+    {
+      id: "publication_year",
+      header: "Year",
+      width: "w-[50px]",
+      sortable: true,
+      mobile: "main",
+      render: (book) => (
+        <span className="text-muted-foreground">
+          {book.publication_year || "-"}
+        </span>
+      ),
+    },
+    {
+      id: "added_at",
+      header: "Added",
+      width: "w-[100px] lg:w-[120px]",
+      sortable: true,
+      mobile: "main",
+      render: (book) => (
+        <>
+        <span className="inline sm:hidden text-muted-foreground">added on: </span>
+        <span className="text-muted-foreground">{formatDate(book.added_at)}</span>
+        </>
+      ),
+    },
+    {
+      id: "actions",
+      header: "",
+      //width: "w-[180px]",
+      mobile: "bottom",
+      render: (book) => (
+        <div className="flex justify-center sm:justify-end">
+          <BookshelfButton bookId={book.id} />
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div className="mx-auto px-4 py-8 max-w-5xl mb-20">
@@ -211,7 +306,7 @@ export default function MyBooksPage() {
       <h1 className="text-3xl font-bold text-foreground mb-4">My Books</h1>
 
       <div className="flex justify-between items-center mb-6 flex-col md:flex-row gap-4">
-        <div className="flex items-center gap-2 block">
+        <div className="flex flex-row items-center gap-2">
           <span>Bookshelf:</span>
           <Select value={selectedShelfId} onValueChange={setSelectedShelfId}>
             <SelectTrigger className="w-52">
@@ -250,7 +345,7 @@ export default function MyBooksPage() {
             value={titleQuery}
             onChange={(e) => setTitleQuery(e.target.value)}
             placeholder="Search by title..."
-            className="w-90"
+            className="w-80 md:w-90"
           />
           {/* <Button type="submit" variant="outline" disabled={isFetchingBooks}>
             Search
@@ -344,7 +439,7 @@ export default function MyBooksPage() {
       {/*______________________________________________________________________________________________________*/}
 
       {isFetchingBooks ? (
-        <div className="text-center py-12 text-muted-foreground">Loading books...</div>
+        <p className="text-muted-foreground">Loading books...</p>
       ) : books.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
           {total === 0 && !titleQuery && includeTags.length === 0 && excludeTags.length === 0
@@ -352,83 +447,18 @@ export default function MyBooksPage() {
             : "No books match your search or filters."}
         </div>
       ) : (
-        <div className="border rounded-lg overflow-hidden">
-          {/* Table header */}
-          <div className="hidden sm:grid sm:grid-cols-[46px_2fr_1.5fr_64px_108px_130px] gap-4 items-center px-4 py-2 bg-card text-sm font-medium text-muted-foreground border-b">
-            <span>Cover</span>
-            <button
-              type="button"
-              className="flex items-center gap-1 hover:text-foreground text-left"
-              onClick={() => handleSortToggle("title")}
-            >
-              Title
-              <SortIndicator column="title" />
-            </button>
-            <span>Author</span>
-            <button
-              type="button"
-              className="flex items-center gap-1 hover:text-foreground text-left"
-              onClick={() => handleSortToggle("publication_year")}
-            >
-              Year
-              <SortIndicator column="publication_year" />
-            </button>
-            <button
-              type="button"
-              className="flex items-center gap-1 hover:text-foreground text-left"
-              onClick={() => handleSortToggle("added_at")}
-            >
-              Date added
-              <SortIndicator column="added_at" />
-            </button>
-            <span className="text-left">Bookshelves</span>
-          </div>
-
-          {/* Table rows */}
-          {books.map((book) => (
-            <div
-              key={book.id}
-              className="flex flex-col gap-2 px-4 py-3 border-b last:border-b-0 sm:grid sm:grid-cols-[46px_2fr_1.5fr_64px_108px_130px] sm:items-center sm:gap-4"
-            >
-              <BookCover coverId={book.cover_id} title={book.title} author={book.author} size="S" />
-              <div>
-                <Link
-                  href={`/books/${book.id}`}
-                  className="font-medium text-foreground hover:underline"
-                >
-                  {book.title}
-                </Link>
-                {book.series && <Link
-                  href={`/series/${book.series.id}`}
-                  className="font-sm text-sm text-foreground/70 hover:underline block"
-                >
-                  {book.series.name} #{book.series_index}
-                </Link>}
-              </div>
-              <Link
-                href={`/authors/${encodeURIComponent(book.author)}`}
-                className="text-sm text-muted-foreground hover:underline"
-              >
-                {book.author}
-              </Link>
-
-              <span className="text-sm text-muted-foreground">
-                {book.publication_year || "-"}
-              </span>
-
-              <span className="text-sm text-muted-foreground">
-                {formatDate(book.added_at)}
-              </span>
-
-              <div className="flex justify-end">
-                <BookshelfButton bookId={book.id} />
-              </div>
-            </div>
-          ))}
-        </div>
+        <BooksTable
+          data={books}
+          columns={columns}
+          sort={sortBy}
+          dir={sortDir}
+          onSort={handleSortToggle}
+        />
       )}
 
-      {/* Edit Shelves Modal */}
+      {/*----------------------------------------- Edit Shelves Modal -----------------------------------------*/}
+      {/*______________________________________________________________________________________________________*/}
+
       <EditShelvesModal
         open={editModalOpen}
         onOpenChange={setEditModalOpen}

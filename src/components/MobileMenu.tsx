@@ -151,12 +151,12 @@ function MobileNavSection({ section, onNavigate }: MobileNavSectionProps) {
           className="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent"
         >
           <span className="flex items-center gap-3">
-            <span className="text-muted-foreground">{section.icon}</span>
+            <span className="text-secondary-foreground">{section.icon}</span>
             {section.title}
           </span>
           <ChevronDown
             className={cn(
-              "size-4 text-muted-foreground transition-transform duration-200",
+              "size-4 text-secondary-foreground transition-transform duration-200",
               isOpen && "rotate-180"
             )}
           />
@@ -169,7 +169,7 @@ function MobileNavSection({ section, onNavigate }: MobileNavSectionProps) {
               key={item.href}
               href={item.href}
               onClick={onNavigate}
-              className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-secondary-foreground transition-colors hover:bg-accent hover:text-foreground"
             >
               {item.icon}
               {item.title}
@@ -241,12 +241,12 @@ export function MobileMenu({ user, profile, onLogIn, onLogOut }: MobileMenuProps
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-3 rounded-md px-3 py-2">
                   <Avatar className="size-10">
-                    <AvatarImage src={profile.avatar_url || "/placeholder.svg"} alt={profile.username} />
+                    <AvatarImage src={profile.avatar_url || undefined} alt={profile.username} />
                     <AvatarFallback>{initials}</AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col">
                     <span className="text-sm font-medium">{profile.username}</span>
-                    <span className="text-xs text-muted-foreground">{user?.email}</span>
+                    <span className="text-xs text-secondary-foreground">{user?.email}</span>
                   </div>
                 </div>
                 <div className="flex flex-col gap-1">
@@ -255,7 +255,7 @@ export function MobileMenu({ user, profile, onLogIn, onLogOut }: MobileMenuProps
                     onClick={handleNavigate}
                     className="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent"
                   >
-                    <UserIcon className="size-4 text-muted-foreground" />
+                    <UserIcon className="size-4 text-secondary-foreground" />
                     Profile
                   </Link>
                   <Link
@@ -263,7 +263,7 @@ export function MobileMenu({ user, profile, onLogIn, onLogOut }: MobileMenuProps
                     onClick={handleNavigate}
                     className="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent"
                   >
-                    <Bell className="size-4 text-muted-foreground" />
+                    <Bell className="size-4 text-secondary-foreground" />
                     Notifications
                   </Link>
                   <Link
@@ -271,7 +271,7 @@ export function MobileMenu({ user, profile, onLogIn, onLogOut }: MobileMenuProps
                     onClick={handleNavigate}
                     className="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent"
                   >
-                    <Settings className="size-4 text-muted-foreground" />
+                    <Settings className="size-4 text-secondary-foreground" />
                     Settings
                   </Link>
                 </div>

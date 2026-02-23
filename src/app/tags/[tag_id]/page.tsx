@@ -8,6 +8,8 @@ import BookCover from "@/components/BookCover";
 import BookshelfButton from "@/components/BookshelfButton";
 import TagPreferenceIcons from "@/components/TagPreferenceIcons";
 import type { Book } from "@/types";
+import { formatAuthors } from "@/lib/authors";
+import { BooksTable, BooksColumn } from "@/components/BooksTable";
 
 type BookWithScore = Book & {
   tagScore: number;
@@ -80,13 +82,6 @@ export default function TagPage({ params }: { params: Promise<{ tag_id: string }
     }
   }
 
-  function SortIndicator({ column }: { column: string }) {
-    if (sort !== column) return <ArrowUpDown className="h-3.5 w-3.5 opacity-30" />;
-    return (
-      <ArrowUpDown className={`h-3.5 w-3.5 ${dir === "asc" ? "rotate-180" : ""}`} />
-    );
-  }
-
   if (!tag) {
     return (
       <div className="mx-auto max-w-5xl p-4">
@@ -94,6 +89,109 @@ export default function TagPage({ params }: { params: Promise<{ tag_id: string }
       </div>
     );
   }
+
+  //------------------------------------------------ Columns ------------------------------------------------
+  const columns: BooksColumn<BookWithScore>[] = [
+  {
+    id: "cover",
+    header: "Cover",
+    width: "w-[46px]",
+    mobile: "cover",
+    render: (book) => (
+      <>
+      <BookCover
+        coverId={book.cover_id}
+        title={book.title}
+        author={formatAuthors(book.authors)}
+        className="hidden sm:flex"
+        size="S"
+      />
+      <BookCover
+        coverId={book.cover_id}
+        title={book.title}
+        author={formatAuthors(book.authors)}
+        className="flex sm:hidden"
+        size="M"
+      />
+      </>
+    ),
+  },
+  {
+    id: "title",
+    header: "Title",
+    sortable: true,
+    mobile: "main",
+    render: (book) => (
+      <div className="block">
+        <Link
+          href={`/books/${book.id}`}
+          className="text-lg sm:text-sm font-medium text-foreground hover:underline truncate inline sm:block text-wrap mr-1 sm:mr-0"
+        >
+          {book.title}
+        </Link>
+        {book.series && <Link
+            href={`/series/${book.series.id}`}
+            className="text-lg sm:text-sm text-muted-foreground/80 hover:underline truncate inline sm:block text-wrap"
+          >
+            ({book.series.name} #{book.series_index})
+          </Link>}
+      </div>
+    ),
+  },
+  {
+    id: "author",
+    header: "Author(s)",
+    mobile: "main",
+    render: (book) => (
+      <>
+      <span className="text-muted-foreground sm:hidden">by </span>
+      {book.authors.map((a, i) => (
+                  <span key={a.id}>
+                    {i > 0 && ", "}
+                    <Link href={`/authors/${a.id}`} className="text-muted-foreground hover:underline font-medium sm:font-normal">{a.name}</Link>
+                  </span>
+                ))}
+      </>
+    ),
+  },
+  {
+    id: "publication_year",
+    header: "Year",
+    width: "w-[64px]",
+    sortable: true,
+    mobile: "main",
+    render: (book) => (
+      <span className="text-muted-foreground">
+        {book.publication_year || "-"}
+      </span>
+    ),
+  },
+  {
+    id: "score",
+    header: "Score",
+    width: "w-[80px]",
+    sortable: true,
+    mobile: "main",
+    render: (book) => (
+      <>
+      <span className="sm:hidden text-muted-foreground">score: </span>
+      <span className="text-muted-foreground">{book.tagScore}</span>
+      </>
+    ),
+  },
+  {
+    id: "actions",
+    header: "",
+    width: "w-[180px]",
+    mobile: "bottom",
+    render: (book) => (
+      <div className="flex justify-center sm:justify-end">
+        <BookshelfButton bookId={book.id} />
+      </div>
+    ),
+  },
+];
+
 
   return (
     <div className="mx-auto max-w-5xl p-2 md:p-8 space-y-6 mb-10">
@@ -122,7 +220,7 @@ export default function TagPage({ params }: { params: Promise<{ tag_id: string }
               type="checkbox"
               checked={onlyMine}
               onChange={(e) => setOnlyMine(e.target.checked)}
-              className="rounded border-border accent-primary w-4 h-4"
+              className="rounded border-border accent-primary w-4 h-4 bg-background"
             />
             Show only my books
           </label>
@@ -135,73 +233,15 @@ export default function TagPage({ params }: { params: Promise<{ tag_id: string }
       ) : books.length === 0 ? (
         <p className="text-muted-foreground">No books found with this tag.</p>
       ) : (
-        <div className="border rounded-lg overflow-hidden">
-          <div className="hidden sm:grid sm:grid-cols-[40px_2fr_1fr_80px_80px_100px] gap-4 items-center px-4 py-2 bg-card text-sm font-medium text-muted-foreground border-b">
-            <span className="">Cover</span>
-            <button
-              type="button"
-              className="flex items-center gap-1 hover:text-foreground text-left"
-              onClick={() => handleSortToggle("title")}
-            >
-              Title
-              <SortIndicator column="title" />
-            </button>
-            <span>Author</span>
-            <button
-              type="button"
-              className="flex items-center gap-1 hover:text-foreground text-left"
-              onClick={() => handleSortToggle("publication_year")}
-            >
-              Year
-              <SortIndicator column="publication_year" />
-            </button>
-            <button
-              type="button"
-              className="flex items-center gap-1 hover:text-foreground text-left"
-              onClick={() => handleSortToggle("score")}
-            >
-              Score
-              <SortIndicator column="score" />
-            </button>
-            <span className="sr-only">Actions</span>
-          </div>
-
-          {books.map((book) => (
-            <div
-              key={book.id}
-              className="flex flex-col gap-2 px-4 py-3 border-b last:border-b-0 sm:grid sm:grid-cols-[40px_2fr_1fr_80px_80px_100px] sm:items-center sm:gap-4"
-            >
-              <BookCover coverId={book.cover_id} title={book.title} author={book.author} size="S" />
-
-              <Link
-                href={`/books/${book.id}`}
-                className="font-medium text-foreground hover:underline truncate"
-              >
-                {book.title}
-              </Link>
-
-              <Link
-                href={`/authors/${encodeURIComponent(book.author)}`}
-                className="text-sm text-muted-foreground hover:underline truncate"
-              >
-                {book.author}
-              </Link>
-
-              <span className="text-sm text-muted-foreground">
-                {book.publication_year || "-"}
-              </span>
-
-              <span className="text-sm text-muted-foreground">
-                {book.tagScore}
-              </span>
-
-              <div className="flex justify-end">
-                <BookshelfButton bookId={book.id} />
-              </div>
-            </div>
-          ))}
-        </div>
+        <BooksTable
+          data={books}
+          columns={columns}
+          sort={sort}
+          dir={dir}
+          onSort={handleSortToggle}
+        />
       )}
+
     </div>
   );
 }

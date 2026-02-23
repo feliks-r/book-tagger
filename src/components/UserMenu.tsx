@@ -70,7 +70,7 @@ export function UserMenu({ user, profile }: UserMenuProps) {
           </Avatar>
           <div className="flex flex-col space-y-0.5">
             <p className="text-sm font-medium">{profile?.username}</p>
-            <p className="text-xs text-muted-foreground">{user.email}</p>
+            <p className="text-xs text-secondary-foreground">{user.email}</p>
           </div>
         </div>
         <DropdownMenuSeparator />

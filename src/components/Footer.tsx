@@ -4,19 +4,19 @@ import Link from 'next/link'
 
 export default function Footer(){
     return (
-        <footer className="border-t bg-card text-sm text-muted-foreground">
+        <footer className="border-t bg-card text-sm text-muted-foreground transition-all">
         <div className="mx-auto max-w-7xl px-6 py-10">
             <div className="grid gap-7 sm:grid-cols-2 md:grid-cols-4">
             {/* Learn more */}
             <div>
                 <h3 className="mb-3 font-medium text-foreground">Learn more</h3>
                 <ul className="space-y-2">
-                <li><Link href="/about" className="hover:text-foreground hover:underline">About</Link></li>
-                <li><Link href="/faq" className="hover:text-foreground hover:underline">FAQ</Link></li>
-                <li><Link href="/changelog" className="hover:text-foreground hover:underline">Changelog</Link></li>
-                <li><Link href="/roadmap" className="hover:text-foreground hover:underline">Roadmap</Link></li>
-                <li><Link href="/privacy" className="hover:text-foreground hover:underline">Privacy policy</Link></li>
-                <li><Link href="/terms" className="hover:text-foreground hover:underline">Terms of service</Link></li>
+                <li><Link href="/about" className="hover:text-secondary-foreground hover:underline">About</Link></li>
+                <li><Link href="/faq" className="hover:text-secondary-foreground hover:underline">FAQ</Link></li>
+                <li><Link href="/changelog" className="hover:text-secondary-foreground hover:underline">Changelog</Link></li>
+                <li><Link href="/roadmap" className="hover:text-secondary-foreground hover:underline">Roadmap</Link></li>
+                <li><Link href="/privacy" className="hover:text-secondary-foreground hover:underline">Privacy policy</Link></li>
+                <li><Link href="/terms" className="hover:text-secondary-foreground hover:underline">Terms of service</Link></li>
                 </ul>
             </div>
 
@@ -26,7 +26,7 @@ export default function Footer(){
                 <ul className="space-y-2">
                 <li>
                     <span className='text-foreground'>E-mail: </span>
-                    <a href="mailto:contact@sitename.example" className="hover:text-foreground hover:underline inline-block">
+                    <a href="mailto:contact@sitename.example" className="hover:text-secondary-foreground hover:underline inline-block">
                       contact@sitename.example
                     </a>
                 </li>
@@ -36,7 +36,7 @@ export default function Footer(){
                     </a>
                 </li>*/}
                 <li>
-                    <a href="https://discord.gg/yourinvite" className="hover:text-foreground hover:underline">
+                    <a href="https://discord.gg/yourinvite" className="hover:text-secondary-foreground hover:underline">
                     Join our Discord server
                     </a>
                 </li>
@@ -47,9 +47,9 @@ export default function Footer(){
             <div>
                 <h3 className="mb-3 font-medium text-foreground">Help Site Name</h3>
                 <ul className="space-y-2">
-                <li><Link href="/donate" className="hover:text-foreground hover:underline">Donate</Link></li>
-                <li><Link href="/volunteer" className="hover:text-foreground hover:underline">Volunteer</Link></li>
-                <li><Link href="/volunteer" className="hover:text-foreground hover:underline">Suggest changes</Link></li>
+                <li><Link href="/donate" className="hover:text-secondary-foreground hover:underline">Donate</Link></li>
+                <li><Link href="/volunteer" className="hover:text-secondary-foreground hover:underline">Volunteer</Link></li>
+                <li><Link href="/volunteer" className="hover:text-secondary-foreground hover:underline">Suggest changes</Link></li>
                 </ul>
             </div>
 

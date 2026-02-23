@@ -6,8 +6,9 @@ import TagSection from "@/components/TagSection";
 import BookshelfButton from "@/components/BookshelfButton";
 import BookCover from "@/components/BookCover";
 import ExpandableText from "@/components/ExpandableText";
+import { parseAuthorsJoin, formatAuthors } from "@/lib/authors";
 
-import type { Book, BookTagWithVotes, BookLink } from "@/types";
+import type { Book, BookTagWithVotes, BookLink, Author } from "@/types";
 
 type PageProps = { 
   params: Promise<{ book_id: string }>;
@@ -19,14 +20,30 @@ export default async function BookPage({ params }: PageProps) {
 
   // ------------------------------------------------------------
   // Fetch book
-  const { data: book, error: bookError } = await supabase
+  const { data: rawBook, error: bookError } = await supabase
     .from("books")
-    .select("id, title, author, description, publication_year, series_index, series:series_id (id, name), cover_id")
+    .select("id, title, description, cover_id, series_id, series_index, publication_year, book_authors(display_order, authors(id, name))")
     .eq("id", bookId)
-    .single<Book>();
+    .single();
 
-  if (bookError || !book) {
+  if (bookError || !rawBook) {
     return <div className="p-8">Book not found.</div>;
+  }
+
+  const authors: Author[] = parseAuthorsJoin((rawBook as any).book_authors);
+  const authorsText = formatAuthors(authors);
+  const book = { ...rawBook, authors };
+
+  // ------------------------------------------------------------
+  // Fetch series name if book belongs to a series
+  let seriesName: string | null = null;
+  if (book.series_id) {
+    const { data: seriesData } = await supabase
+      .from("series")
+      .select("name")
+      .eq("id", book.series_id)
+      .single();
+    seriesName = seriesData?.name ?? null;
   }
 
   // ------------------------------------------------------------
@@ -90,7 +107,7 @@ export default async function BookPage({ params }: PageProps) {
           <BookCover
             coverId={book.cover_id}
             title={book.title}
-            author={book.author}
+            author={authorsText}
             size="L"
           />
           {/* Links - desktop only, below cover */}
@@ -103,7 +120,7 @@ export default async function BookPage({ params }: PageProps) {
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary hover:underline"
+                  className="flex items-center gap-1.5 text-sm text-secondary-foreground hover:text-primary hover:underline transition-all"
                 >
                   {link.label}
                   <ExternalLink className="h-3 w-3 shrink-0" />
@@ -117,20 +134,26 @@ export default async function BookPage({ params }: PageProps) {
         <div className="flex flex-col mx-0 md:mx-8 flex-1">
           <div className="flex items-start justify-between gap-4">
             <div>
-              {book.series && (
-                <p className="text-lg text-foreground/80 text-center md:text-left">
-                  <Link href={`/series/${book.series.id}`} className="hover:underline">
-                    {book.series.name}
+              {seriesName && (
+                <p className="text-lg text-muted-foreground text-center md:text-left">
+                  <Link href={`/series/${book.series_id}`} className="hover:underline transition-all">
+                    {seriesName}
                   </Link>
                   {book.series_index && ` #${book.series_index}`}
                 </p>
               )}
               <h1 className="text-3xl font-bold mb-1 text-center md:text-left">{book.title}</h1>
-              <p className="text-lg text-foreground/80 mb-5 text-center md:text-left">
-                by <span className="font-medium">{book.author}</span>
+              <p className="text-lg text-muted-foreground mb-3 text-center md:text-left">
+                {"by "}
+                {authors.map((a, i) => (
+                  <span key={a.id}>
+                    {i > 0 && (i === authors.length - 1 ? " and " : ", ")}
+                    <Link href={`/authors/${a.id}`} className="font-medium hover:underline transition-all">{a.name}</Link>
+                  </span>
+                ))}
               </p>
-              <p className="text-lg text-foreground/80 mb-5 text-center md:text-left">
-                  first published: {book.publication_year}
+              <p className="text-sm text-muted-foreground mb-5 text-center md:text-left whitespace-pre-wrap">
+                  fiction  |  novel  |  {book.publication_year}
               </p>
             </div>
             {/* Bookshelf button - top right on desktop */}
@@ -158,7 +181,7 @@ export default async function BookPage({ params }: PageProps) {
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary hover:underline"
+                  className="flex items-center gap-1.5 text-sm text-secondary-foreground hover:text-primary hover:underline"
                 >
                   {link.label}
                   <ExternalLink className="h-3.5 w-3.5 shrink-0" />
@@ -169,7 +192,7 @@ export default async function BookPage({ params }: PageProps) {
         </div>
       </div>
 
-      <div className="border-t-2 border-secondary" />
+      <div className="border-t border-border" />
       
       {/* Tags */}
       <div>

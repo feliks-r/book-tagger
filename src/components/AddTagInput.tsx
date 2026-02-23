@@ -149,7 +149,7 @@ export default function AddTagInput({ bookId, onTagAdded }: Props) {
 
       {/*----------------- Input -----------------*/}
       <form ref={searchRef}>
-      <Plus className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground" />
+      <Plus className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-secondary-foreground" />
       <Input 
         value={query} 
         onChange={(e) => {
@@ -163,9 +163,9 @@ export default function AddTagInput({ bookId, onTagAdded }: Props) {
 
       {suggestionsOpen && query.length > 0 && (
         <div className="absolute z-10 mt-1 w-full rounded border bg-background shadow">
-          {isLoading && <div className="px-3 py-2 text-sm text-gray-500">Searching...</div>}
+          {isLoading && <div className="px-3 py-2 text-sm text-foreground/60">Searching...</div>}
           {!isLoading && suggestions.length === 0 && (
-            <div className="px-3 py-2 text-sm text-gray-500">No matching tags</div>
+            <div className="px-3 py-2 text-sm text-muted-foreground">No matching tags</div>
           )}
           {!isLoading &&
             suggestions.map((tag) => (
@@ -175,7 +175,7 @@ export default function AddTagInput({ bookId, onTagAdded }: Props) {
                 onClick={() => handleSelect(tag)}
               >
                 <div className="inline-block">{tag.name}</div>
-                {tag.category && <small className="text-foreground/60 inline-block ml-2">({tag.category.name})</small>}
+                {tag.category && <small className="text-muted-foreground inline-block ml-2">({tag.category.name})</small>}
               </div>
             ))}
           <div className="border-t" />

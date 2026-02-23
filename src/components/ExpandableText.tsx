@@ -25,7 +25,7 @@ export default function ExpandableText({
       <div className="relative">
         <div
           ref={contentRef}
-          className="whitespace-pre-line text-foreground leading-relaxed overflow-hidden transition-[max-height] duration-300 ease-in-out"
+          className="whitespace-pre-line text-foreground/90 leading-relaxed overflow-hidden transition-[max-height] duration-300 ease-in-out"
           style={{
             maxHeight: expanded ? "none" : `${maxLines * 1.625}rem`,
           }}

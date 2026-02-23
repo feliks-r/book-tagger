@@ -51,7 +51,7 @@ const navSections: NavSection[] = [
       },
       {
         title: "My Books",
-        href: "/my-books",
+        href: "/books/my-books",
         icon: <LibraryBig className="size-4" />,
         description: "View your book collection",
       },
@@ -132,8 +132,8 @@ function NavLinkItem({ item }: { item: NavItem }) {
         <Link
           href={item.href}
           className={cn(
-            "flex-row items-start gap-3 rounded-md p-3 transition-colors",
-            "hover:bg-accent",
+            "flex-row items-start gap-3 rounded-md transition-colors p-3 text-foreground",
+            "hover:bg-accent hover:text-accent",
             "focus:bg-accent focus:text-accent-foreground focus:outline-none"
           )}
         >

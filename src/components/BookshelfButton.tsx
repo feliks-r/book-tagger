@@ -96,10 +96,10 @@ export default function BookshelfButton({ bookId }: Props) {
     .map((s) => s.name);
 
   return (
-    <div className="flex items-center">
+    <div className="flex items-center p-0">
       <Button
         variant={onAnyShelves ? "default" : "outline"}
-        className="rounded-r-none border-r-0"
+        className="rounded-r-none border-r-0 p-0 m-0"
         onClick={() => {
           if (!onAnyShelves) {
             addToDefaultShelf();
@@ -112,11 +112,11 @@ export default function BookshelfButton({ bookId }: Props) {
         ) : (
           <>
             {onAnyShelves ? (
-              <Check className="size-4 mr-1.5" />
+              <Check className="size-4 mr-1" />
             ) : (
-              <BookOpen className="size-4 mr-1.5" />
+              <BookOpen className="size-4 mr-1" />
             )}
-            <span className="max-w-40 truncate">
+            <span className="max-w-26 truncate">
               {onAnyShelves ? activeShelfNames.join(", ") : "Add to shelf"}
             </span>
           </>
@@ -127,7 +127,7 @@ export default function BookshelfButton({ bookId }: Props) {
         <DropdownMenuTrigger asChild>
           <Button
             variant={onAnyShelves ? "default" : "outline"}
-            className="rounded-l-none px-2"
+            className="rounded-l-none"
             disabled={loading}
           >
             <ChevronDown className="size-4" />

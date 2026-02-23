@@ -16,6 +16,8 @@ import type { Book } from "@/types";
 import { MobileMenu } from './MobileMenu';
 import { NavLinks } from './NavLinks';
 
+import { formatAuthors } from "@/lib/authors";
+
 export default function Navbar() {
   const { user, profile } = useAuth()
   const router = useRouter()
@@ -77,14 +79,14 @@ export default function Navbar() {
         <MobileMenu user={user} profile={profile}/>
 
         {/*--------------------- Navigation ---------------------*/}
-        <nav className='hidden md:flex py-2 items-center'>
+        <nav className='hidden md:flex py-2 items-center lg:gap-10'>
         <Link 
           key="home"
           href="/"
-          className={"font-bold text-xl px-6 mr-5 hidden md:inline-block"}
+          className={"font-bold text-xl px-5 hidden md:inline-block"}
         >
-          <BookOpen className='inline-block mr-2' size={30}/>
-          <span>The Reader Hivemind</span>
+          <BookOpen className='inline-block' size={30}/>
+          <span className='hidden lg:inline-block ml-2'>CoLibrary</span>
         </Link>
 
         {/* Navigation Links - Hidden on mobile */}
@@ -93,9 +95,9 @@ export default function Navbar() {
         </nav>
 
         {/*--------------------- Center: Search ---------------------*/}
-        <form ref={searchRef} onSubmit={handleSearch} className="w-90 relative">
+        <form ref={searchRef} onSubmit={handleSearch} className="w-80 lg:w-90 relative">
 
-          <Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground" />
+          <Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-secondary-foreground" />
           <Input
             placeholder="Search books…"
             className="pl-9"
@@ -110,9 +112,9 @@ export default function Navbar() {
 
           {suggestionsOpen && query.length > 0 && (
           <div className="absolute z-10 mt-1 w-full rounded border bg-card shadow">
-            {isLoading && <div className="px-3 py-2 text-sm text-gray-500">Searching...</div>}
+            {isLoading && <div className="px-3 py-2 text-sm text-muted-foreground">Searching...</div>}
             {!isLoading && suggestions.length === 0 && (
-              <div className="px-3 py-2 text-sm text-gray-500">No matching results</div>
+              <div className="px-3 py-2 text-sm text-muted-foreground">No matching results</div>
             )}
             {!isLoading &&
               suggestions.map((book) => (
@@ -121,10 +123,10 @@ export default function Navbar() {
                   className="cursor-pointer w-full px-2 py-1 block hover:bg-secondary rounded flex gap-2"
                   href={`/books/${book.id}`}
                 >
-                  <BookCover coverId={book.cover_id} title={book.title} author={book.author} size="S" />
+                  <BookCover coverId={book.cover_id} title={book.title} author={formatAuthors(book.authors)} size="S" />
                   <div className='min-w-0'>
                     <div className='text-md truncate'>{book.title}</div>
-                    {book.author && <small className="text-muted-foreground truncate block">{book.author}</small>}
+                    {book.authors && <small className="text-muted-foreground truncate block">{formatAuthors(book.authors)}</small>}
                   </div>
                 </Link>
               ))}

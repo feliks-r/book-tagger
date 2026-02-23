@@ -61,24 +61,24 @@
 :root {
   --background: oklch(100% 0.00011 271.152);
   --foreground: oklch(26.655% 0.05103 340.798);
-  --card: oklch(98.483% 0.00121 107.824);
+  --card: #fafafa; /* oklch(98.483% 0.00121 107.824) */
   --card-foreground: oklch(0.3257 0.1161 325.0372);
   --popover: oklch(1.0000 0 0);
-  --popover-foreground: oklch(0.3257 0.1161 325.0372);
+  --popover-foreground: oklch(26.655% 0.05103 340.798);
   --primary: oklch(0.5316 0.1409 355.1999);
   --primary-foreground: oklch(1.0000 0 0);
   --secondary: lab(91 -7.05 19.18);
-  --secondary-foreground: oklch(31.528% 0.05302 163.472);
+  --secondary-foreground: oklch(0.51 0.1 335.55);
   --muted: oklch(94.572% 0.00589 264.659);
-  --muted-foreground: oklch(0.51 0.1 335.55);
-  --accent: oklch(93.653% 0.06206 116.465);
+  --muted-foreground: #725a6a;
+  --accent: lab(91 -7.05 19.18);
   --accent-foreground: lab(25 4.6 1.59);
   --destructive: lab(92 5.48 0.53);
   --destructive-foreground: oklch(0.5248 0.1368 20.8317);
   --positive: oklch(83.251% 0.06362 116.65);
   --positive-foreground: oklch(0.65 0.14 119.74);
-  --border: #decce1;
-  --input: #decce1;
+  --border: #dbd0dc; /* #decce1 */
+  --input: #dbd0dc;
   --ring: oklch(0.79 0.09 117.31);
   --chart-1: oklch(0.6038 0.2363 344.4657);
   --chart-2: oklch(0.4445 0.2251 300.6246);
@@ -116,24 +116,24 @@
 }
 
 .dark {
- --background: #1a1823;
-  --foreground: #e0ddef;
-  --card: #232030;
+ --background: #15141d;
+  --foreground: oklch(90.526% 0.02464 293.471);
+  --card: #1d1a27;
   --card-foreground: #e0ddef;
   --popover: #232030;
   --popover-foreground: #e0ddef;
   --primary: #b9c798;
   --primary-foreground: #1a1823;
   --secondary: #5a5370;
-  --secondary-foreground: #e0ddef;
+  --secondary-foreground: #a09aad;
   --muted: #3a2d42;
   --muted-foreground: #a09aad;
   --accent: #372e3f;
-  --accent-foreground: #edc5d4;
+  --accent-foreground: #edc5d4; 
   --destructive: #392837;
   --destructive-foreground: #e57373;
   --positive: oklch(54.691% 0.10503 119.174);
-  --positive-foreground: oklch(66.22% 0.11278 117.847);
+  --positive-foreground: #b9c798;
   --border: #302c40;
   --input: #2a273a;
   --ring: #f2bbc9;

@@ -19,12 +19,12 @@ const placeholderClasses: Record<Size, string> = {
 const placeholderTextClasses: Record<Size, { title: string; author: string } | null> = {
   S: null,
   M: {
-    title: "text-sm leading-tight font-semibold text-muted-foreground line-clamp-3",
-    author: "text-xs leading-tight text-muted-foreground/70 mt-0.5 line-clamp-2",
+    title: "text-sm leading-tight font-semibold text-secondary-foreground line-clamp-3",
+    author: "text-xs leading-tight text-secondary-foreground/70 mt-0.5 line-clamp-2",
   },
   L: {
-    title: "text-lg leading-tight font-semibold text-muted-foreground line-clamp-4",
-    author: "text-md leading-tight text-muted-foreground/70 mt-1 line-clamp-2",
+    title: "text-lg leading-tight font-semibold text-secondary-foreground line-clamp-4",
+    author: "text-md leading-tight text-secondary-foreground/70 mt-1 line-clamp-2",
   },
 };
 
@@ -55,7 +55,7 @@ function Placeholder({
     <div
       className={`${sizeClass} ${placeholderClass} ${className ?? ""} bg-muted rounded-sm flex flex-col items-center justify-center text-center overflow-hidden shrink-0`}
     >
-      <div className="border border-muted-foreground/60 grow flex flex-col items-center justify-center text-center overflow-hidden shrink-0 m-0 w-full p-1">
+      <div className="border border-secondary-foreground/60 grow flex flex-col items-center justify-center text-center overflow-hidden shrink-0 m-0 w-full p-1">
         {textClasses && (
         <>
           <span className={textClasses.title}>{title}</span>
@@ -89,7 +89,7 @@ export default function BookCover({
     );
   }
 
-  if (size=="S"){size = "M"}
+  //if (size=="S"){size = "M"}
 
   return (
     <img
