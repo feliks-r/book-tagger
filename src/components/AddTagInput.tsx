@@ -171,7 +171,7 @@ export default function AddTagInput({ bookId, onTagAdded }: Props) {
             suggestions.map((tag) => (
               <div
                 key={tag.id}
-                className="cursor-pointer px-3 py-2 hover:bg-secondary rounded"
+                className="cursor-pointer px-3 py-2 hover:bg-accent rounded"
                 onClick={() => handleSelect(tag)}
               >
                 <div className="inline-block">{tag.name}</div>

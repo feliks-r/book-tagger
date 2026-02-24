@@ -3,11 +3,22 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { AuthProvider } from '@/context/AuthContext'
 import { ThemeProvider } from '@/context/ThemeContext'
-import { Geist } from 'next/font/google'
+import { Geist, Inter, Rethink_Sans } from 'next/font/google'
 import { BackToTop } from '@/components/back-to-top'
 
 const geist = Geist({
   subsets: ['latin'],
+  variable: '--font-body',
+})
+
+//const inter = Inter({
+//  subsets: ['latin'],
+//  variable: '--font-body',
+//})
+
+const rethink = Rethink_Sans({
+  subsets: ['latin'],
+  variable: '--font-heading',
 })
 
 export const metadata = {
@@ -21,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={geist.className} suppressHydrationWarning>
+    <html lang="en" className={`${geist.variable} ${rethink.variable}`} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{

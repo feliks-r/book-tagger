@@ -9,7 +9,7 @@ export default function Footer(){
             <div className="grid gap-7 sm:grid-cols-2 md:grid-cols-4">
             {/* Learn more */}
             <div>
-                <h3 className="mb-3 font-medium text-foreground">Learn more</h3>
+                <h3 className="text-base mb-3 font-medium text-foreground">Learn more</h3>
                 <ul className="space-y-2">
                 <li><Link href="/about" className="hover:text-secondary-foreground hover:underline">About</Link></li>
                 <li><Link href="/faq" className="hover:text-secondary-foreground hover:underline">FAQ</Link></li>
@@ -22,7 +22,7 @@ export default function Footer(){
 
             {/* Contact */}
             <div>
-                <h3 className="mb-3 font-medium text-foreground">Contact</h3>
+                <h3 className="text-base mb-3 font-medium text-foreground">Contact</h3>
                 <ul className="space-y-2">
                 <li>
                     <span className='text-foreground'>E-mail: </span>
@@ -45,7 +45,7 @@ export default function Footer(){
 
             {/* Help */}
             <div>
-                <h3 className="mb-3 font-medium text-foreground">Help Site Name</h3>
+                <h3 className="text-base mb-3 font-medium text-foreground">Help Site Name</h3>
                 <ul className="space-y-2">
                 <li><Link href="/donate" className="hover:text-secondary-foreground hover:underline">Donate</Link></li>
                 <li><Link href="/volunteer" className="hover:text-secondary-foreground hover:underline">Volunteer</Link></li>
@@ -55,7 +55,7 @@ export default function Footer(){
 
             {/* Attribution */}
             <div className="text-foreground">
-                <h3 className="mb-3 font-medium">About this site</h3>
+                <h3 className="text-base mb-3 font-medium">About this site</h3>
                 <p className="leading-relaxed">
                 Booksonomy is a community-driven project for organizing and finding books by tags.
                 </p>

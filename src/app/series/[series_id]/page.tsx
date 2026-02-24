@@ -78,11 +78,11 @@ export default async function SeriesPage({ params }: PageProps) {
             <div className="flex-1 min-w-0 flex flex-col">
               <Link
                 href={`/books/${book.id}`}
-                className="text-lg font-semibold text-foreground hover:underline leading-snug"
+                className="font-heading text-lg font-semibold text-foreground hover:underline leading-snug"
               >
                 {book.title}
               </Link>
-              <p className="text-sm text-muted-foreground mt-0.5">
+              <p className="font-heading text-sm text-muted-foreground mt-0.5">
                 by {formatAuthors(book.authors)}
               </p>
               {book.publication_year && (

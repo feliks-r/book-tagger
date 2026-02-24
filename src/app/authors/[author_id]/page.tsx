@@ -103,20 +103,26 @@ export default function AuthorPage() {
       sortable: true,
       mobile: "main",
       render: (book) => (
-        <>
-        <Link
-          href={`/books/${book.id}`}
-          className="text-lg sm:text-sm font-medium text-foreground hover:underline truncate inline sm:block text-wrap mr-1 sm:mr-0"
-        >
-          {book.title}
-        </Link>
-        {book.series && <Link
-          href={`/series/${book.series.id}`}
-          className="text-lg sm:text-sm text-muted-foreground/80 hover:underline truncate inline sm:block text-wrap"
-        >
-          {book.series.name} #{book.series_index}
-        </Link>}
-        </>
+        <div className="flex flex-col font-heading">
+          <span>
+            <Link
+              href={`/books/${book.id}`}
+              className="text-lg/6 sm:text-sm font-medium text-foreground hover:underline truncate inline text-wrap mr-1 sm:mr-0"
+            >
+              {book.title}
+            </Link>
+          </span>
+
+          {book.series && 
+          <span>
+            <Link
+              href={`/series/${book.series.id}`}
+              className="text-lg/6 sm:text-sm text-muted-foreground/90 hover:underline truncate inline text-wrap"
+            >
+              ({book.series.name} #{book.series_index})
+            </Link>
+          </span>}
+        </div>
       ),
     },
     {

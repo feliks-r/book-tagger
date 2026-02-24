@@ -203,7 +203,7 @@ export default function ExplorePage() {
             <Link
               key={book.id}
               href={`/books/${book.id}`}
-              className="block border rounded-lg p-4 hover:bg-secondary/50 transition-colors flex"
+              className="flex border rounded-lg p-4 hover:bg-secondary/50 transition-colors"
             >
               <BookCover
                 coverId={book.cover_id}

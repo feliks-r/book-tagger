@@ -46,7 +46,7 @@ export function BooksTable<T>({
     <div className="border rounded-lg overflow-hidden">
       <table className="w-full text-sm">
         {/* HEADER */}
-        <thead className="hidden sm:table-header-group bg-card text-secondary-foreground border-b">
+        <thead className="font-heading hidden sm:table-header-group bg-card text-secondary-foreground border-b">
           <tr>
             {columns.map((col) => (
               <th

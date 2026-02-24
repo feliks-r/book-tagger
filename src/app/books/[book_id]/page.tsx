@@ -131,24 +131,23 @@ export default async function BookPage({ params }: PageProps) {
         </div>
 
         {/* Right column: title, shelf button, description */}
-        <div className="flex flex-col mx-0 md:mx-8 flex-1">
+        <div className="flex flex-col mx-auto md:mx-8 flex-1">
           <div className="flex items-start justify-between gap-4">
-            <div>
+            <div className="w-full">
               {seriesName && (
-                <p className="text-lg text-muted-foreground text-center md:text-left">
+                <p className="font-heading text-xl text-muted-foreground italic text-center md:text-left">
                   <Link href={`/series/${book.series_id}`} className="hover:underline transition-all">
-                    {seriesName}
+                    {seriesName} {book.series_index && ` #${book.series_index}`}
                   </Link>
-                  {book.series_index && ` #${book.series_index}`}
                 </p>
               )}
-              <h1 className="text-3xl font-bold mb-1 text-center md:text-left">{book.title}</h1>
-              <p className="text-lg text-muted-foreground mb-3 text-center md:text-left">
-                {"by "}
+              <h1 className="text-3xl font-heading font-bold mb-1 text-center md:text-left">{book.title}</h1>
+              <p className="font-heading text-xl text-foreground mb-3 text-center md:text-left">
+                {/* {"by "} */}
                 {authors.map((a, i) => (
                   <span key={a.id}>
                     {i > 0 && (i === authors.length - 1 ? " and " : ", ")}
-                    <Link href={`/authors/${a.id}`} className="font-medium hover:underline transition-all">{a.name}</Link>
+                    <Link href={`/authors/${a.id}`} className="text-muted-foreground hover:underline transition-all">{a.name}</Link>
                   </span>
                 ))}
               </p>
@@ -196,7 +195,7 @@ export default async function BookPage({ params }: PageProps) {
       
       {/* Tags */}
       <div>
-        <h2 className="text-xl font-semibold mb-0 inline-block">Community Tags</h2>
+        <h2 className="font-heading text-xl font-semibold mb-0 inline-block">Community Tags</h2>
         <TagSection
           bookId={book.id}
           initialTags={allTags}

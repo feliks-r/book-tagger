@@ -24,7 +24,7 @@ const placeholderTextClasses: Record<Size, { title: string; author: string } | n
   },
   L: {
     title: "text-lg leading-tight font-semibold text-secondary-foreground line-clamp-4",
-    author: "text-md leading-tight text-secondary-foreground/70 mt-1 line-clamp-2",
+    author: "text-base leading-tight text-secondary-foreground/70 mt-1 line-clamp-2",
   },
 };
 

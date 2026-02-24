@@ -229,20 +229,26 @@ export default function MyBooksPage() {
       sortable: true,
       mobile: "main",
       render: (book) => (
-        <>
-        <Link
-          href={`/books/${book.id}`}
-          className="text-lg/6 sm:text-sm font-medium text-foreground hover:underline truncate inline sm:block text-wrap mr-1 sm:mr-0"
-        >
-          {book.title}
-        </Link>
-        {book.series && <Link
-          href={`/series/${book.series.id}`}
-          className="text-lg/6 sm:text-sm text-muted-foreground/90 hover:underline truncate inline sm:block text-wrap"
-        >
-          ({book.series.name} #{book.series_index})
-        </Link>}
-        </>
+        <div className="flex flex-col font-heading">
+          <span>
+            <Link
+              href={`/books/${book.id}`}
+              className="text-lg/6 sm:text-sm font-medium text-foreground hover:underline truncate inline text-wrap mr-1 sm:mr-0"
+            >
+              {book.title}
+            </Link>
+          </span>
+
+          {book.series && 
+          <span>
+            <Link
+              href={`/series/${book.series.id}`}
+              className="text-lg/6 sm:text-sm text-muted-foreground/90 hover:underline truncate inline text-wrap"
+            >
+              ({book.series.name} #{book.series_index})
+            </Link>
+          </span>}
+        </div>
       ),
     },
     {
@@ -338,7 +344,7 @@ export default function MyBooksPage() {
             e.preventDefault();
             fetchBooks();
           }}
-          className="flex items-center gap-2 block"
+          className="flex items-center gap-2"
         >
           <Input
             type="text"
@@ -418,8 +424,8 @@ export default function MyBooksPage() {
               </div>
             </div>
 
-            <Button onClick={handleApplyFilters} disabled={isFetchingBooks} className="w-full">
-              {isFetchingBooks ? "Searching..." : "Apply Filters"}
+            <Button onClick={handleApplyFilters} disabled={isFetchingBooks} className="max-w-100">
+              {isFetchingBooks ? "Searching..." : "Apply"}
             </Button>
           </div>
         </CollapsibleContent>

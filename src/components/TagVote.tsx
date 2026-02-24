@@ -52,7 +52,7 @@ export default function TagVote({ bookId, tagId, initialScore, initialValue, onC
   }
 
   return (
-    <div className="flex items-center gap-1 text-sm">
+    <div className="flex items-center gap-0.75 text-sm">
       {/* Upvote */}
       <button
         onClick={() => vote(1)}
@@ -61,14 +61,14 @@ export default function TagVote({ bookId, tagId, initialScore, initialValue, onC
         aria-label="Upvote"
       >
         <ArrowBigUp 
-          size={18} 
+          size={16} 
           className={`hover:text-positive-foreground ${value === 1 ? "text-positive-foreground fill-positive-foreground" : "text-foreground/40"}`}
           strokeWidth={2} 
         />
       </button>
 
       {/* Score */}
-      <span className="text-center font-medium">{score}</span>
+      <span className="text-center font-medium text-muted-foreground">{score}</span>
 
       {/* Downvote */}
       <button
@@ -78,7 +78,7 @@ export default function TagVote({ bookId, tagId, initialScore, initialValue, onC
         aria-label="Downvote"
       >
         <ArrowBigDown 
-          size={18}
+          size={16}
           className={`hover:text-destructive-foreground ${value === -1 ? "text-destructive-foreground fill-destructive-foreground" : "text-foreground/40"}`}
           strokeWidth={2} 
         />

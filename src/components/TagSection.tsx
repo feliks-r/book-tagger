@@ -105,12 +105,12 @@ export default function TagSection({ bookId, initialTags }: Props) {
       {/* Render grouped tags */}
       {grouped.map((category) => (
         <section key={category.name} className="mb-6">
-          <h3 className="font-semibold text-secondary-foreground mb-1">{capitalizeFirstLetter(category.name)}:</h3>
+          <h3 className="font-heading font-semibold text-muted-foreground/90 mb-1">{capitalizeFirstLetter(category.name)}:</h3>
           <div className="flex flex-wrap gap-2">
             {category.tags.map((tag) => (
-              <div key={tag.id} className="flex items-center gap-3 rounded-full px-3 py-1 bg-muted text-base">
-                <Link href={`/tags/${tag.id}`} className="hover:text-secondary-foreground hover:underline transition-all">{tag.name}</Link>
-
+              <div key={tag.id} className="flex items-center gap-2 rounded-md pr-2 pl-2.5 bg-muted text-base">
+                <Link href={`/tags/${tag.id}`} className="hover:text-secondary-foreground hover:underline transition-all my-0.5 pr-2">{tag.name}</Link>
+                <div className="border-l-2 border-background h-full"></div>
                 <TagVote
                   bookId={bookId}
                   tagId={tag.id}

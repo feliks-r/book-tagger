@@ -72,7 +72,7 @@ export default function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 border-b-1 z-50 bg-background">
+    <header className="sticky top-0 border-b z-50 bg-background">
       <div className="max-w-7xl mx-auto p-0 flex items-center justify-between min-h-12">
 
         {/*--------------------- Mobile (hamburger menu) ---------------------*/}
@@ -86,7 +86,7 @@ export default function Navbar() {
           className={"font-bold text-xl px-5 hidden md:inline-block"}
         >
           <BookOpen className='inline-block' size={30}/>
-          <span className='hidden lg:inline-block ml-2'>CoLibrary</span>
+          <span className='font-heading hidden lg:inline-block ml-2'>CoLibrary</span>
         </Link>
 
         {/* Navigation Links - Hidden on mobile */}
@@ -120,12 +120,12 @@ export default function Navbar() {
               suggestions.map((book) => (
                 <Link
                   key={book.id}
-                  className="cursor-pointer w-full px-2 py-1 block hover:bg-secondary rounded flex gap-2"
+                  className="cursor-pointer w-full px-2 py-1 hover:bg-accent rounded flex gap-2 transition-colors"
                   href={`/books/${book.id}`}
                 >
                   <BookCover coverId={book.cover_id} title={book.title} author={formatAuthors(book.authors)} size="S" />
                   <div className='min-w-0'>
-                    <div className='text-md truncate'>{book.title}</div>
+                    <div className='text-base truncate'>{book.title}</div>
                     {book.authors && <small className="text-muted-foreground truncate block">{formatAuthors(book.authors)}</small>}
                   </div>
                 </Link>
