@@ -24,6 +24,7 @@ import {
   Tags,
   LogOut,
   UserIcon,
+  Shield,
 } from "lucide-react"
 
 interface UserMenuProps {
@@ -109,6 +110,17 @@ export function UserMenu({ user, profile }: UserMenuProps) {
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
+        {(profile?.role === "moderator" || profile?.role === "admin") && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href="/mod">
+                <Shield className="mr-2 size-4" />
+                Moderator Panel
+              </Link>
+            </DropdownMenuItem>
+          </>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={logout}
