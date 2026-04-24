@@ -26,9 +26,9 @@ export async function GET(req: NextRequest) {
       moderator_notes,
       created_at,
       reviewed_at,
-      user_id,
+      submitted_by,
       reviewed_by,
-      profiles:user_id(username),
+      profiles:submitted_by(username),
       series:series_id(name),
       proposal_authors(id, author_id, proposed_name, display_order, authors:author_id(id, name)),
       proposal_links(id, label, url, display_order)
@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
     moderator_notes: p.moderator_notes,
     created_at: p.created_at,
     reviewed_at: p.reviewed_at,
-    submitted_by: p.user_id,
+    submitted_by: p.submitted_by,
     submitted_by_username: p.profiles?.username || "Unknown",
     authors: (p.proposal_authors || [])
       .sort((a: any, b: any) => a.display_order - b.display_order)
