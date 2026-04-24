@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useEffect, useState, useCallback, useMemo } from "react"
+import { createContext, useContext, useEffect, useState, useCallback, useMemo, useRef } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { useAuth } from "@/context/AuthContext"
 
@@ -30,8 +30,14 @@ function applyTheme(theme: Theme) {
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const supabase = useMemo(() => createClient(), [])
   const { user } = useAuth()
+  const userRef = useRef(user)
   const [theme, setThemeState] = useState<Theme>("system")
   const [loaded, setLoaded] = useState(false)
+
+  // Keep userRef up to date
+  useEffect(() => {
+    userRef.current = user
+  }, [user])
 
   // Fetch theme from DB when user logs in
   useEffect(() => {
@@ -83,12 +89,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       applyTheme(newTheme)
       if (typeof window !== "undefined") localStorage.setItem("theme", newTheme)
 
-      if (user) {
+      const currentUser = userRef.current
+      if (currentUser) {
         // Check if row exists
         const { data: existing } = await supabase
           .from("user_preferences")
           .select("id")
-          .eq("user_id", user.id)
+          .eq("user_id", currentUser.id)
           .maybeSingle()
 
         let error
@@ -97,13 +104,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
           const result = await supabase
             .from("user_preferences")
             .update({ theme: newTheme, updated_at: new Date().toISOString() })
-            .eq("user_id", user.id)
+            .eq("user_id", currentUser.id)
           error = result.error
         } else {
           // Insert new row
           const result = await supabase
             .from("user_preferences")
-            .insert({ user_id: user.id, theme: newTheme })
+            .insert({ user_id: currentUser.id, theme: newTheme })
           error = result.error
         }
 
@@ -114,7 +121,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         }
       }
     },
-    [user, supabase],
+    [supabase],
   )
 
   return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>
