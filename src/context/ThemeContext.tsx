@@ -49,9 +49,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       .from("user_preferences")
       .select("theme")
       .eq("user_id", user.id)
-      .single<{ theme: string }>()
-      .then(({ data }) => {
+      .maybeSingle<{ theme: string }>()
+      .then(({ data, error }) => {
         const validThemes: Theme[] = ["light", "dark", "system"]
+        // If no row exists for this user, create one
+        if (!data && !error) {
+          supabase.from("user_preferences").insert({ user_id: user.id, theme: "system" }).then(() => {})
+        }
         const dbTheme = data?.theme && validThemes.includes(data.theme as Theme) ? (data.theme as Theme) : "system"
         setThemeState(dbTheme)
         if (typeof window !== "undefined") localStorage.setItem("theme", dbTheme)
@@ -82,8 +86,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       if (user) {
         await supabase
           .from("user_preferences")
-          .update({ theme: newTheme })
-          .eq("user_id", user.id)
+          .upsert({ user_id: user.id, theme: newTheme }, { onConflict: "user_id" })
       }
     },
     [user, supabase],
