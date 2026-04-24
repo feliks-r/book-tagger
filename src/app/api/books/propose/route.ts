@@ -39,7 +39,7 @@ export async function POST(req: Request) {
   const { data: proposal, error: proposalError } = await supabase
     .from("book_proposals")
     .insert({
-      submitted_by: user.id,
+      user_id: user.id,
       title: title.trim(),
       description: description?.trim() || null,
       publication_year: publication_year || null,
