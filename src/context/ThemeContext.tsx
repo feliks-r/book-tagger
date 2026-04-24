@@ -84,9 +84,34 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       if (typeof window !== "undefined") localStorage.setItem("theme", newTheme)
 
       if (user) {
-        await supabase
+        // Check if row exists
+        const { data: existing } = await supabase
           .from("user_preferences")
-          .upsert({ user_id: user.id, theme: newTheme }, { onConflict: "user_id" })
+          .select("id")
+          .eq("user_id", user.id)
+          .maybeSingle()
+
+        let error
+        if (existing) {
+          // Update existing row
+          const result = await supabase
+            .from("user_preferences")
+            .update({ theme: newTheme, updated_at: new Date().toISOString() })
+            .eq("user_id", user.id)
+          error = result.error
+        } else {
+          // Insert new row
+          const result = await supabase
+            .from("user_preferences")
+            .insert({ user_id: user.id, theme: newTheme })
+          error = result.error
+        }
+
+        if (error) {
+          console.log("[v0] Error saving theme:", error)
+        } else {
+          console.log("[v0] Theme saved successfully:", newTheme)
+        }
       }
     },
     [user, supabase],
