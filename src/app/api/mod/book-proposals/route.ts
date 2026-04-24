@@ -28,7 +28,6 @@ export async function GET(req: NextRequest) {
       reviewed_at,
       submitted_by,
       reviewed_by,
-      profiles:submitted_by(username),
       series:series_id(name),
       proposal_authors(id, author_id, proposed_name, display_order, authors:author_id(id, name)),
       proposal_links(id, label, url, display_order)
@@ -40,6 +39,14 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching book proposals:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
+  // Fetch usernames for submitted_by users
+  const userIds = [...new Set((proposals || []).map((p: any) => p.submitted_by).filter(Boolean))];
+  const { data: profiles } = userIds.length > 0
+    ? await supabase.from("profiles").select("id, username").in("id", userIds)
+    : { data: [] };
+  const usernameMap: Record<string, string> = {};
+  (profiles || []).forEach((p: any) => { usernameMap[p.id] = p.username; });
 
   // Transform the data for easier consumption
   const transformed = (proposals || []).map((p: any) => ({
@@ -56,7 +63,7 @@ export async function GET(req: NextRequest) {
     created_at: p.created_at,
     reviewed_at: p.reviewed_at,
     submitted_by: p.submitted_by,
-    submitted_by_username: p.profiles?.username || "Unknown",
+    submitted_by_username: usernameMap[p.submitted_by] || "Unknown",
     authors: (p.proposal_authors || [])
       .sort((a: any, b: any) => a.display_order - b.display_order)
       .map((a: any) => ({

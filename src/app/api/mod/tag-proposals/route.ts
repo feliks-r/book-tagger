@@ -25,7 +25,6 @@ export async function GET(req: NextRequest) {
       reviewed_at,
       user_id,
       reviewed_by,
-      profiles:user_id(username),
       tag_categories:category_id(id, name)
     `)
     .eq("status", status)
@@ -35,6 +34,14 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching tag proposals:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
+  // Fetch usernames for submitted_by users
+  const userIds = [...new Set((proposals || []).map((p: any) => p.user_id).filter(Boolean))];
+  const { data: profiles } = userIds.length > 0
+    ? await supabase.from("profiles").select("id, username").in("id", userIds)
+    : { data: [] };
+  const usernameMap: Record<string, string> = {};
+  (profiles || []).forEach((p: any) => { usernameMap[p.id] = p.username; });
 
   const transformed = (proposals || []).map((p: any) => ({
     id: p.id,
@@ -47,7 +54,7 @@ export async function GET(req: NextRequest) {
     created_at: p.created_at,
     reviewed_at: p.reviewed_at,
     submitted_by: p.user_id,
-    submitted_by_username: p.profiles?.username || "Unknown",
+    submitted_by_username: usernameMap[p.user_id] || "Unknown",
   }));
 
   return NextResponse.json({ proposals: transformed });
