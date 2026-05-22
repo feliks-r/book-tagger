@@ -16,6 +16,7 @@ import { formatAuthors } from "@/lib/authors";
 
 import { MobileMenu } from './MobileMenu'
 import { NavLinks } from './NavLinks'
+import NotificationBell from './NotificationBell'
 
 export default function Navbar() {
   const { user, profile } = useAuth()
@@ -132,8 +133,11 @@ export default function Navbar() {
 
         </form>
 
-        {/*--------------------- Right: Auth ---------------------*/}
-        <UserMenu user={user} profile={profile}/>
+        {/*--------------------- Right: Notifications & Auth ---------------------*/}
+        <div className="flex items-center">
+          <NotificationBell />
+          <UserMenu user={user} profile={profile}/>
+        </div>
 
       </div>
     </header>

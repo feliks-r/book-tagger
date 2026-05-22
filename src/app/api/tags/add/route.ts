@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { notifyTagFollowers } from "@/lib/notifications";
 import type { BookTagWithVotes } from "@/types";
 
 export async function POST(req: Request) {
@@ -20,6 +21,16 @@ export async function POST(req: Request) {
   }
 
   // Upsert vote = +1
+  // First check if this tag already exists on this book (any user)
+  const { data: existingVotes } = await supabase
+    .from("book_tags")
+    .select("id")
+    .eq("book_id", bookId)
+    .eq("tag_id", tagId)
+    .limit(1);
+
+  const isFirstTagging = !existingVotes || existingVotes.length === 0;
+
   const { error: upsertError } = await supabase
     .from("book_tags")
     .upsert(
@@ -80,6 +91,28 @@ export async function POST(req: Request) {
     score,
     user_value: userVote,
   };
+
+  // Notify tag followers if this is the first time this tag is on this book
+  if (isFirstTagging) {
+    // Get book title for the notification
+    const { data: book } = await supabase
+      .from("books")
+      .select("title")
+      .eq("id", bookId)
+      .single();
+
+    if (book) {
+      // Fire and forget - don't await to keep response fast
+      notifyTagFollowers({
+        supabase,
+        tagId,
+        tagName: tagData.name,
+        bookId,
+        bookTitle: book.title,
+        excludeUserId: user.id,
+      });
+    }
+  }
 
   return NextResponse.json({ tag });
 }

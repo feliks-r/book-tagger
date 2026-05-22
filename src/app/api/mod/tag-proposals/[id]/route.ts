@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { isModerator, logModerationAction } from "@/lib/moderation";
+import { notifyProposalReviewed } from "@/lib/notifications";
 
 export async function PATCH(
   req: NextRequest,
@@ -66,11 +67,52 @@ export async function PATCH(
 
   // If approved, create the actual tag
   if (action === "approve") {
+    // Get proposal info for notification
+    const { data: proposalInfo } = await supabase
+      .from("tag_proposals")
+      .select("user_id, name")
+      .eq("id", id)
+      .single();
+
     const result = await createTagFromProposal(supabase, id);
     if (!result.success) {
       return NextResponse.json({ error: result.error }, { status: 500 });
     }
+
+    // Notify the submitter
+    if (proposalInfo?.user_id) {
+      notifyProposalReviewed({
+        supabase,
+        userId: proposalInfo.user_id,
+        proposalType: "tag",
+        proposalName: proposalInfo.name,
+        status: "approved",
+        link: `/tags/${result.tagId}`,
+        proposalId: id,
+      });
+    }
+
     return NextResponse.json({ success: true, tagId: result.tagId });
+  }
+
+  // If rejected, notify the submitter
+  if (action === "reject") {
+    const { data: proposalInfo } = await supabase
+      .from("tag_proposals")
+      .select("user_id, name")
+      .eq("id", id)
+      .single();
+
+    if (proposalInfo?.user_id) {
+      notifyProposalReviewed({
+        supabase,
+        userId: proposalInfo.user_id,
+        proposalType: "tag",
+        proposalName: proposalInfo.name,
+        status: "rejected",
+        proposalId: id,
+      });
+    }
   }
 
   return NextResponse.json({ success: true });
