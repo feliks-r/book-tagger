@@ -1,0 +1,130 @@
+"use client"
+
+import { createContext, useContext, useEffect, useState, useCallback, useMemo, useRef } from "react"
+import { createClient } from "@/lib/supabase/client"
+import { useAuth } from "@/context/AuthContext"
+
+type Theme = "light" | "dark" | "system"
+
+type ThemeContextType = {
+  theme: Theme
+  setTheme: (theme: Theme) => void
+}
+
+const ThemeContext = createContext<ThemeContextType>({
+  theme: "system",
+  setTheme: () => {},
+})
+
+function applyTheme(theme: Theme) {
+  const root = document.documentElement
+
+  if (theme === "system") {
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches
+    root.classList.toggle("dark", prefersDark)
+  } else {
+    root.classList.toggle("dark", theme === "dark")
+  }
+}
+
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const supabase = useMemo(() => createClient(), [])
+  const { user } = useAuth()
+  const userRef = useRef(user)
+  const [theme, setThemeState] = useState<Theme>("system")
+  const [loaded, setLoaded] = useState(false)
+
+  // Keep userRef up to date
+  useEffect(() => {
+    userRef.current = user
+  }, [user])
+
+  // Fetch theme from DB when user logs in
+  useEffect(() => {
+    if (!user) {
+      // Not logged in: use system or localStorage fallback
+      const stored = typeof window !== "undefined" ? localStorage.getItem("theme") : null
+      const validThemes: Theme[] = ["light", "dark", "system"]
+      const fallback = stored && validThemes.includes(stored as Theme) ? (stored as Theme) : "system"
+      setThemeState(fallback)
+      setLoaded(true)
+      return
+    }
+
+    supabase
+      .from("user_preferences")
+      .select("theme")
+      .eq("user_id", user.id)
+      .maybeSingle<{ theme: string }>()
+      .then(({ data, error }) => {
+        const validThemes: Theme[] = ["light", "dark", "system"]
+        // If no row exists for this user, create one
+        if (!data && !error) {
+          supabase.from("user_preferences").insert({ user_id: user.id, theme: "system" }).then(() => {})
+        }
+        const dbTheme = data?.theme && validThemes.includes(data.theme as Theme) ? (data.theme as Theme) : "system"
+        setThemeState(dbTheme)
+        if (typeof window !== "undefined") localStorage.setItem("theme", dbTheme)
+        setLoaded(true)
+      })
+  }, [user, supabase])
+
+  // Apply theme to <html> whenever it changes
+  useEffect(() => {
+    if (!loaded) return
+    applyTheme(theme)
+
+    // Listen for system preference changes when in system mode
+    if (theme === "system") {
+      const mql = window.matchMedia("(prefers-color-scheme: dark)")
+      const handler = () => applyTheme("system")
+      mql.addEventListener("change", handler)
+      return () => mql.removeEventListener("change", handler)
+    }
+  }, [theme, loaded])
+
+  const setTheme = useCallback(
+    async (newTheme: Theme) => {
+      setThemeState(newTheme)
+      applyTheme(newTheme)
+      if (typeof window !== "undefined") localStorage.setItem("theme", newTheme)
+
+      const currentUser = userRef.current
+      if (currentUser) {
+        // Check if row exists
+        const { data: existing } = await supabase
+          .from("user_preferences")
+          .select("id")
+          .eq("user_id", currentUser.id)
+          .maybeSingle()
+
+        let error
+        if (existing) {
+          // Update existing row
+          const result = await supabase
+            .from("user_preferences")
+            .update({ theme: newTheme, updated_at: new Date().toISOString() })
+            .eq("user_id", currentUser.id)
+          error = result.error
+        } else {
+          // Insert new row
+          const result = await supabase
+            .from("user_preferences")
+            .insert({ user_id: currentUser.id, theme: newTheme })
+          error = result.error
+        }
+
+        if (error) {
+          console.log("[v0] Error saving theme:", error)
+        } else {
+          console.log("[v0] Theme saved successfully:", newTheme)
+        }
+      }
+    },
+    [supabase],
+  )
+
+  return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>
+}
+
+export const useTheme = () => useContext(ThemeContext)

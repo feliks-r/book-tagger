@@ -24,6 +24,7 @@ import {
   Tags,
   LogOut,
   UserIcon,
+  Shield,
 } from "lucide-react"
 
 interface UserMenuProps {
@@ -49,14 +50,14 @@ export function UserMenu({ user, profile }: UserMenuProps) {
     )
   }
 
-  const initials = profile?.username.charAt(0)
+  const initials = profile?.username?.charAt(0) ?? ""
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="rounded-full m-2">
           <Avatar className="size-9">
-            <AvatarImage src={profile?.avatar_url || null} alt={profile?.username} />
+            <AvatarImage src={profile?.avatar_url ?? undefined} alt={profile?.username} />
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
           <span className="sr-only">Open user menu</span>
@@ -65,7 +66,7 @@ export function UserMenu({ user, profile }: UserMenuProps) {
       <DropdownMenuContent align="end" className="w-56">
         <div className="flex items-center gap-3 px-2 py-2">
           <Avatar className="size-10">
-            <AvatarImage src={profile?.avatar_url || null} alt={profile?.username} />
+            <AvatarImage src={profile?.avatar_url ?? undefined} alt={profile?.username} />
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col space-y-0.5">
@@ -109,6 +110,17 @@ export function UserMenu({ user, profile }: UserMenuProps) {
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
+        {(profile?.role === "moderator" || profile?.role === "admin") && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href="/mod">
+                <Shield className="mr-2 size-4" />
+                Moderator Panel
+              </Link>
+            </DropdownMenuItem>
+          </>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={logout}

@@ -1,6 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
+import { ExternalLink } from "lucide-react";
 import TagSection from "@/components/TagSection";
-import type { Book, BookTagWithVotes } from "@/types";
+import BookshelfButton from "@/components/BookshelfButton";
+import BookCover from "@/components/BookCover";
+import ExpandableText from "@/components/ExpandableText";
+import Link from "next/link";
+import { parseAuthorsJoin, formatAuthors } from "@/lib/authors";
+import type { BookTagWithVotes, GroupedCategory, BookLink, Author } from "@/types";
 
 type PageProps = { 
   params: Promise<{ book_id: string }>;
@@ -12,14 +18,30 @@ export default async function BookPage({ params }: PageProps) {
 
   // ------------------------------------------------------------
   // Fetch book
-  const { data: book, error: bookError } = await supabase
+  const { data: rawBook, error: bookError } = await supabase
     .from("books")
-    .select("id, title, author, description")
+    .select("id, title, description, cover_id, series_id, series_index, book_authors(display_order, authors(id, name))")
     .eq("id", bookId)
-    .single<Book>();
+    .single();
 
-  if (bookError || !book) {
+  if (bookError || !rawBook) {
     return <div className="p-8">Book not found.</div>;
+  }
+
+  const authors: Author[] = parseAuthorsJoin((rawBook as any).book_authors);
+  const authorsText = formatAuthors(authors);
+  const book = { ...rawBook, authors };
+
+  // ------------------------------------------------------------
+  // Fetch series name if book belongs to a series
+  let seriesName: string | null = null;
+  if (book.series_id) {
+    const { data: seriesData } = await supabase
+      .from("series")
+      .select("name")
+      .eq("id", book.series_id)
+      .single();
+    seriesName = seriesData?.name ?? null;
   }
 
   // ------------------------------------------------------------
@@ -34,17 +56,18 @@ export default async function BookPage({ params }: PageProps) {
 
   const allTags: BookTagWithVotes[] = tags as BookTagWithVotes[];
 
-  console.log(tags);
+  // ------------------------------------------------------------
+  // Fetch links
+  const { data: links } = await supabase
+    .from("book_links")
+    .select("*")
+    .eq("book_id", bookId)
+    .order("display_order", { ascending: true });
+
+  const bookLinks: BookLink[] = (links as BookLink[]) || [];
 
   // ------------------------------------------------------------
   // Group by category
-  type GroupedCategory = {
-    categoryId: string;
-    categoryName: string;
-    displayOrder: number;
-    tags: BookTagWithVotes[];
-  };
-
   const groupedMap: Record<string, GroupedCategory> = {};
 
   allTags.forEach((tag) => {
@@ -67,24 +90,99 @@ export default async function BookPage({ params }: PageProps) {
   // Render
   return (
     <div className="mx-auto max-w-6xl p-2 md:p-8 space-y-6 mt-0">
-      
-      {/* Title */}
+
       <div className="flex flex-col md:flex-row mt-0">
-        <div className="bg-gray-200 w-45 min-w-45 h-60 rounded-sm m-auto mt-0 mb-4 md:m-0"></div>
-        <div className="flex flex-col mx-8">
-          <h1 className="text-3xl font-bold mb-1 text-center md:text-left">{book.title}</h1>
-          <p className="text-lg text-foreground/80 mb-5 text-center md:text-left">
-            by <span className="font-medium">{book.author}</span>
-          </p>
+        {/* Left column: cover + links (desktop) */}
+        <div className="flex flex-col items-center gap-4 m-auto mt-0 mb-4 md:m-0 shrink-0">
+          <BookCover
+            coverId={book.cover_id}
+            title={book.title}
+            author={authorsText}
+            size="L"
+          />
+
+          {/* Links - desktop only, below cover */}
+          {bookLinks.length > 0 && (
+            <div className="hidden md:flex flex-col gap-1.5 w-full">
+              <h3 className="text-sm font-semibold text-muted-foreground">Links</h3>
+              {bookLinks.map((link) => (
+                <a
+                  key={link.id}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-sm text-primary hover:underline"
+                >
+                  <ExternalLink className="h-3.5 w-3.5 shrink-0" />
+                  {link.label}
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Right column: title, shelf button, description */}
+        <div className="flex flex-col mx-0 md:mx-8 flex-1">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold mb-1 text-center md:text-left">{book.title}</h1>
+              <p className="text-lg text-foreground/80 text-center md:text-left">
+                {"by "}
+                {authors.map((a, i) => (
+                  <span key={a.id}>
+                    {i > 0 && (i === authors.length - 1 ? " and " : ", ")}
+                    <Link href={`/authors/${a.id}`} className="font-medium hover:underline">{a.name}</Link>
+                  </span>
+                ))}
+              </p>
+              {seriesName && book.series_id && (
+                <p className="text-sm text-muted-foreground mb-5 text-center md:text-left">
+                  <Link href={`/series/${book.series_id}`} className="hover:underline text-primary">
+                    {seriesName}
+                  </Link>
+                  {book.series_index != null && ` #${book.series_index}`}
+                </p>
+              )}
+              {!seriesName && <div className="mb-5" />}
+            </div>
+            {/* Bookshelf button - top right on desktop */}
+            <div className="hidden md:block shrink-0">
+              <BookshelfButton bookId={book.id} />
+            </div>
+          </div>
+
+          {/* Bookshelf button - above description on mobile */}
+          <div className="flex justify-center mb-4 md:hidden">
+            <BookshelfButton bookId={book.id} />
+          </div>
 
           {book.description && (
-            <p className="text-gray-800 leading-relaxed">{book.description}</p>
+            <ExpandableText text={book.description} maxLines={6} />
+          )}
+
+          {/* Links - mobile only, below description */}
+          {bookLinks.length > 0 && (
+            <div className="flex flex-col gap-1.5 mt-4 md:hidden">
+              <h3 className="text-sm font-semibold text-muted-foreground">Links</h3>
+              {bookLinks.map((link) => (
+                <a
+                  key={link.id}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-sm text-primary hover:underline"
+                >
+                  <ExternalLink className="h-3.5 w-3.5 shrink-0" />
+                  {link.label}
+                </a>
+              ))}
+            </div>
           )}
         </div>
       </div>
 
       <div className="border-t" />
-      
+
       {/* Tags */}
       <div>
         <h2 className="text-xl font-semibold mb-0 inline-block">Community Tags</h2>

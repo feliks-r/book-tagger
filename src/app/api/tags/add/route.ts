@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { notifyTagFollowers } from "@/lib/notifications";
 import type { BookTagWithVotes } from "@/types";
 
 export async function POST(req: Request) {
@@ -20,6 +21,16 @@ export async function POST(req: Request) {
   }
 
   // Upsert vote = +1
+  // First check if this tag already exists on this book (any user)
+  const { data: existingVotes } = await supabase
+    .from("book_tags")
+    .select("id")
+    .eq("book_id", bookId)
+    .eq("tag_id", tagId)
+    .limit(1);
+
+  const isFirstTagging = !existingVotes || existingVotes.length === 0;
+
   const { error: upsertError } = await supabase
     .from("book_tags")
     .upsert(
@@ -33,6 +44,14 @@ export async function POST(req: Request) {
   }
 
   // Fetch the tag and category
+  type TagWithCategory = {
+    id: string;
+    name: string;
+    description: string | null;
+    category_id: string | null;
+    tag_categories: { name: string; display_order: number } | null;
+  };
+
   const { data: tagData, error: tagError } = await supabase
     .from("tags")
     .select(`
@@ -43,7 +62,7 @@ export async function POST(req: Request) {
       tag_categories(name, display_order)
     `)
     .eq("id", tagId)
-    .single();
+    .single<TagWithCategory>();
 
   if (tagError || !tagData) {
     console.error(tagError);
@@ -60,16 +79,40 @@ export async function POST(req: Request) {
   const score = votes?.reduce((sum, v) => sum + v.value, 0) ?? 0;
   const userVote = votes?.find((v) => v.user_id === user.id)?.value ?? 0;
 
+  const category = tagData.tag_categories;
+
   const tag: BookTagWithVotes = {
     id: tagData.id,
     name: tagData.name,
     description: tagData.description,
     category_id: tagData.category_id,
-    category_name: tagData.tag_categories?.[0]?.name ?? "",
-    category_display_order: tagData.tag_categories?.[0]?.display_order ?? 0,
+    category_name: category?.name ?? "",
+    category_display_order: category?.display_order ?? 0,
     score,
     user_value: userVote,
   };
+
+  // Notify tag followers if this is the first time this tag is on this book
+  if (isFirstTagging) {
+    // Get book title for the notification
+    const { data: book } = await supabase
+      .from("books")
+      .select("title")
+      .eq("id", bookId)
+      .single();
+
+    if (book) {
+      // Fire and forget - don't await to keep response fast
+      notifyTagFollowers({
+        supabase,
+        tagId,
+        tagName: tagData.name,
+        bookId,
+        bookTitle: book.title,
+        excludeUserId: user.id,
+      });
+    }
+  }
 
   return NextResponse.json({ tag });
 }

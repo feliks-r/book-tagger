@@ -1,12 +1,14 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
 export default function LoginPage() {
   const supabase = createClient()
+  const router = useRouter()
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -29,14 +31,24 @@ export default function LoginPage() {
         },
       })
 
-      if (error) setError(error.message)
+      if (error) {
+        setError(error.message)
+      } else {
+        // For signup, show success message (email verification may be required)
+        setError("Check your email to confirm your account!")
+      }
     } else {
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
 
-      if (error) setError(error.message)
+      if (error) {
+        setError(error.message)
+      } else {
+        router.push("/")
+        router.refresh()
+      }
     }
   }
 

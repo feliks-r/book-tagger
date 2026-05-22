@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, useContext, useEffect, useState, useCallback, useMemo } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { User } from "@supabase/supabase-js"
 import type { Profile } from "@/types"
@@ -18,33 +18,36 @@ const AuthContext = createContext<AuthContextType>({
 })
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const supabase = createClient()
+  const supabase = useMemo(() => createClient(), [])
 
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
 
-  async function fetchProfile(userId: string) {
+  const fetchProfile = useCallback(async (userId: string) => {
     const { data, error } = await supabase
       .from("profiles")
       .select("id, username, role, avatar_url")
       .eq("id", userId)
-      .single()
+      .single<Profile>()
 
-    if (!error) {
+    if (!error && data) {
       setProfile(data)
     }
-  }
+  }, [supabase])
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user)
-      if (data.user) fetchProfile(data.user.id)
+    // Use getSession() for fast initial hydration from cookies (no network call).
+    // The onAuthStateChange listener handles token refresh automatically.
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      const currentUser = session?.user ?? null
+      setUser(currentUser)
+      if (currentUser) fetchProfile(currentUser.id)
       setLoading(false)
     })
 
     const { data: listener } = supabase.auth.onAuthStateChange(
-      async (_, session) => {
+      async (_event, session) => {
         const nextUser = session?.user ?? null
         setUser(nextUser)
 
@@ -59,7 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => {
       listener.subscription.unsubscribe()
     }
-  }, [])
+  }, [supabase, fetchProfile])
 
   return (
     <AuthContext.Provider value={{ user, profile, loading }}>

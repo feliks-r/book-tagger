@@ -20,6 +20,10 @@ export default function TagVote({ bookId, tagId, initialScore, initialValue, onC
     if (loading) return;
     const newValue = value === voteValue ? 0 : voteValue;
 
+    // Store previous state for rollback
+    const previousScore = score;
+    const previousValue = value;
+
     // Optimistic update
     const delta = newValue - value;
     const optimisticScore = score + delta;
@@ -37,6 +41,10 @@ export default function TagVote({ bookId, tagId, initialScore, initialValue, onC
 
       if (!res.ok) throw new Error("Vote failed");
     } catch (err) {
+      // Rollback on error
+      setScore(previousScore);
+      setValue(previousValue);
+      onChangeVote(tagId, previousScore, previousValue);
       console.error(err);
     } finally {
       setLoading(false);
